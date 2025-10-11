@@ -1,1 +1,3 @@
 .dvc/config
+.DS_Store
+.dvc/.DS_Store
