@@ -1,3 +1,6 @@
-"# Ignorar datos grandes y cach‚s" 
-"/data_versioned/" 
-"/.dvc/cache/" 
+# Ignorar datos grandes y cachÃ©s
+/data_versioned/
+/.dvc/cache/
+.dvc/config
+.DS_Store
+.dvc/.DS_Store
