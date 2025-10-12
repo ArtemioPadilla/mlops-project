@@ -8,4 +8,17 @@ pytest
 python-dotenv
 tqdm
 typer
--e .
+
+# Data analysis & ML
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+jupyter
+notebook
+
+# DVC con soporte para S3
+dvc[s3]
+
+# -e .   # desactivado porque requiere Python <=3.11
