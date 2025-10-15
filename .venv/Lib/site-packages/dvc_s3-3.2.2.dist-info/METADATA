@@ -1,0 +1,45 @@
+Metadata-Version: 2.4
+Name: dvc-s3
+Version: 3.2.2
+Summary: s3 plugin for dvc
+Author-email: Iterative <support@dvc.org>
+Maintainer-email: Iterative <support@dvc.org>
+License: Apache License 2.0
+Project-URL: Documentation, https://dvc.org/doc
+Project-URL: Source, https://github.com/iterative/dvc-s3
+Keywords: dvc,s3
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Requires-Python: >=3.9
+Description-Content-Type: text/x-rst
+License-File: LICENSE
+Requires-Dist: dvc
+Requires-Dist: s3fs>=2024.12.0
+Requires-Dist: aiobotocore[boto3]>=2.5.0
+Requires-Dist: flatten_dict<1,>=0.4.1
+Provides-Extra: dev
+Requires-Dist: dvc-s3[tests]; extra == "dev"
+Requires-Dist: mypy==1.16.0; extra == "dev"
+Provides-Extra: tests
+Requires-Dist: dvc[testing]; extra == "tests"
+Requires-Dist: pytest<9,>=7; extra == "tests"
+Requires-Dist: pytest-cov>=4.1.0; extra == "tests"
+Requires-Dist: pytest-xdist>=3.2; extra == "tests"
+Requires-Dist: pytest-servers[s3]>=0.4.0; extra == "tests"
+Dynamic: license-file
+
+dvc-s3
+======
+
+s3 plugin for dvc
+
+Tests
+-----
+
+By default tests will be run against moto (via pytest-servers).
+To run against real S3, set ``DVC_TEST_AWS_REPO_BUCKET`` with an AWS bucket name.
