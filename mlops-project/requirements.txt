@@ -8,4 +8,6 @@ pytest
 python-dotenv
 tqdm
 typer
--e .
+#-e .
+
+loguru
