@@ -1,0 +1,38 @@
+[33m9b322657[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m chore(dvc): set S3 as default remote
+[33mf6051460[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge branch 'main' of https://github.com/ArtemioPadilla/mlops-project
+[33m25f46cf6[m ok
+[33m6a731e5c[m nada
+[33mcf250321[m para que ignore subir las credenciales
+[33m18084809[m para que no se muestren las credenciales
+[33ma93d860d[m Merge branch 'main' of https://github.com/ArtemioPadilla/mlops-project
+[33m1892dc11[m para el archivo de datos modificado
+[33m948871c0[m Remove old broken data.dvc reference
+[33ma3bc2607[m Merge pull request #10 from ArtemioPadilla/mlflow
+[33mca62a682[m se agregaron requeriments
+[33m5936fd67[m feat/initialize-mlflow
+[33m96dfb45e[m Actualizo notebook Limpieza_de_datos con últimas modificaciones
+[33m05105d8d[m Merge branch 'Limpieza-datos'
+[33mb6088acc[m Update .gitignore para excluir .venv
+[33m248d705b[m Merge pull request #9 from ArtemioPadilla/feat/model-training
+[33m8d6f57e9[m feat: Model training Fase 1
+[33m99f6175d[m Fix .gitignore merge conflict
+[33m1ffbca10[m Merge pull request #8 from ArtemioPadilla/preprocess
+[33m512e3168[m feat/push preprocess data
+[33m94948665[m Merge pull request #7 from ArtemioPadilla/Limpieza-datos
+[33m57364d5a[m feat/improved-data-cleansing
+[33mfa50dbdc[m Update EDA + cleaned dataset saved
+[33m714ca142[m Actualizacion menor en preprocessing
+[33md7efa623[m Merge pull request #5 from ArtemioPadilla/Limpieza-datos
+[33mc8a96781[m Notebook con dataset sin nulos en url y demas caracteristicas como numericos. Actualizacion del preprocessing
+[33me75af2d0[m Se comento ultimo bloque
+[33m1a204492[m Merge pull request #4 from ArtemioPadilla/preprocess
+[33m80ab5f38[m Notebook 1 preprocess
+[33mc62d5d78[m Merge pull request #3 from ArtemioPadilla/Data_in_dvc
+[33m23339456[m new data csv in dvc
+[33maa10ab40[m Merge pull request #2 from ArtemioPadilla/Fix_Modified_CSV
+[33ma07ca118[m Subiendo archivo no corrupto de db modified para analisis eda y limpieza de datos
+[33m9a072829[m Merge pull request #1 from ArtemioPadilla/feat/dvc
+[33me5012c96[m feat/dvc-configured
+[33ma1295305[m Initialize DVC
+[33m713422be[m Init DVC
+[33m66349b57[m initialization
