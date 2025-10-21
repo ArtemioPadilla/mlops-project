@@ -1,7 +1,8 @@
 # Ignorar datos grandes y cachés
 /data_versioned/
-/.dvc/cache/
-.dvc/config
+/dvc/cache/
+/dvc/config
 .DS_Store
 .dvc/.DS_Store
 .dvc/config.local
+
