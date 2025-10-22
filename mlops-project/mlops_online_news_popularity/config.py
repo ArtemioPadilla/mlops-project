@@ -21,6 +21,24 @@ MODELS_DIR = PROJ_ROOT / "models"
 REPORTS_DIR = PROJ_ROOT / "reports"
 FIGURES_DIR = REPORTS_DIR / "figures"
 
+# MLflow tracking
+MLFLOW_DIR = PROJ_ROOT / "mlflow"
+MLFLOW_QUICKSTART_DIR = MLFLOW_DIR / "quickstart"
+MLFLOW_DEV_DIR = MLFLOW_DIR / "dev"
+
+# Ensure MLflow directories exist
+MLFLOW_QUICKSTART_DIR.mkdir(parents=True, exist_ok=True)
+MLFLOW_DEV_DIR.mkdir(parents=True, exist_ok=True)
+
+# MLflow tracking URIs
+MLFLOW_QUICKSTART_URI = f"sqlite:///{MLFLOW_QUICKSTART_DIR / 'mlflow.db'}"
+MLFLOW_DEV_URI = f"sqlite:///{MLFLOW_DEV_DIR / 'mlflow.db'}"
+
+# Allow environment variable override for MLflow tracking URI
+import os
+
+MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", MLFLOW_DEV_URI)
+
 # If tqdm is installed, configure loguru with tqdm.write
 # https://github.com/Delgan/loguru/issues/135
 try:

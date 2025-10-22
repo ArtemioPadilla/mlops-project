@@ -190,3 +190,18 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 /data
+.venv/
+
+# MLflow - Quickstart environment (fully ignored for learning/experimentation)
+/mlflow/quickstart/
+
+# MLflow - Dev environment (databases and artifacts ignored, metadata can be tracked)
+/mlflow/dev/*.db
+/mlflow/dev/*.db-shm
+/mlflow/dev/*.db-wal
+/mlflow/dev/mlruns/
+/mlflow/dev/artifacts/
+
+# MLflow - Temporary outputs from notebooks
+outputs/
+mlruns/
