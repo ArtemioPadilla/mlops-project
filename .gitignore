@@ -5,4 +5,4 @@
 .DS_Store
 .dvc/.DS_Store
 .dvc/config.local
-
+.mlops_venv/
