@@ -1,13 +1,50 @@
-black
-flake8
-isort
-loguru
-mkdocs
-pip
-pytest
-python-dotenv
-tqdm
-typer
-#-e .
+# ===========================
+# 🛠️ Herramientas de formateo y estilo
+# ===========================
+black               # Formateador automático de código
+flake8              # Linter para detectar errores de estilo y sintaxis
+isort               # Organizador de imports
 
-loguru
+# ===========================
+# 📝 Utilidades y logging
+# ===========================
+loguru              # Logging simplificado y potente
+tqdm                # Barras de progreso para loops
+typer               # Creación de CLIs fáciles y elegantes
+python-dotenv       # Manejo de variables de entorno
+
+# ===========================
+# 📦 Gestión y documentación
+# ===========================
+pip                 # Instalador de paquetes
+mkdocs              # Generador de documentación
+
+# ===========================
+# 🔬 Ciencia de datos y ML
+# ===========================
+numpy               # Cálculo numérico
+pandas              # Manipulación de datos en DataFrames
+scipy               # Funciones científicas y estadísticas
+matplotlib          # Gráficas básicas
+seaborn             # Gráficas estadísticas más elaboradas
+scikit-learn        # Machine Learning tradicional
+
+# ===========================
+# 🔄 MLOps y control de experimentos
+# ===========================
+dvc                 # Data Version Control
+mlflow              # Seguimiento de experimentos y modelos
+cookiecutter-data-science  # Plantilla estándar de proyectos de DS
+evidently           # Monitoreo de modelos
+deepchecks          # Validaciones de calidad en ML
+sdv                 # Synthetic Data Vault (generación de datos sintéticos)
+
+# ===========================
+# ⚡ APIs y despliegue
+# ===========================
+fastapi             # Framework para crear APIs rápidas y eficientes
+
+# ===========================
+# 🧪 Testing
+# ===========================
+pytest              # Testing unitario y de integración

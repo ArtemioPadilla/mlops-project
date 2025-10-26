@@ -1,11 +1,13 @@
 # main.py
 import os
-from src import DataLoader, DataCleaner, DataComparator
+from .DataLoader import DataLoader
+from .DataCleaner import DataCleaner
+from .DataComparator import DataComparator
 
 # ================================
 # Definir rutas de trabajo
 # ================================
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # sube un nivel desde src/
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DATA_DIR = os.path.join(BASE_DIR, "Data")
 
 def main():
