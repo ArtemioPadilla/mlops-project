@@ -1,14 +1,13 @@
-numpy
-pandas
-scipy
-matplotlib
-seaborn
-scikit-learn
-dvc
-cookiecutter-data-science
+black
+flake8
+isort
+loguru
+mkdocs
+pip
 pytest
-fastapi
-mlflow
-evidently
-sdv
-deepchecks
+python-dotenv
+tqdm
+typer
+#-e .
+
+loguru
