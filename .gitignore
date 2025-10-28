@@ -1,8 +1,3 @@
-# Data
-Data/*.csv
-!Data/*.csv.dvc
-
-
 # Mac OS-specific storage files
 .DS_Store
 
