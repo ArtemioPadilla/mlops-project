@@ -1,0 +1,5 @@
+outs:
+- md5: 4b9e8c6aa5c03c5f568ce239843a5f4e
+  size: 5864
+  hash: md5
+  path: comparacion_final.csv
