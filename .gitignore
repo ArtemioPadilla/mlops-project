@@ -108,3 +108,5 @@ Data/*.csv
 cython_debug/
 .ruff_cache/
 .pypirc
+docs/*.html
+docs/*.png
