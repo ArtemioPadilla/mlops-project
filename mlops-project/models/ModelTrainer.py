@@ -19,7 +19,7 @@ from sklearn.preprocessing import StandardScaler, PowerTransformer
 from sklearn.compose import ColumnTransformer
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
-#import classify_numeric_columns from cleaning_eda
+from mlops_online_news_popularity.preprocess.cleaning_eda import classify_numeric_columns
 
 # =========================================================
 # Base: DataProcessor (mínima)
@@ -100,7 +100,7 @@ class ModelTrainer(DataProcessor):
         numeric_features = self.X_train.select_dtypes(include=np.number).columns
         
         # clasificamos columnas de acuerdo al tipo 
-        cols_bin, cols_no_bin = classify_numeric_columns(self.X_train[numeric_features]) # type: ignore
+        cols_bin, cols_no_bin = classify_numeric_columns(self.X_train[numeric_features]) 
 
         # Procesamos columnas numericas no binarias 
         numeric_non_binary_transformer = Pipeline(steps=[
