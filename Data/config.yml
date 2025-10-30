@@ -1,0 +1,31 @@
+# -----------------------------------------------
+# Configuracion para comparación de modelos ML a entrenar de Regresion 
+# -----------------------------------------------
+
+# --- Configuración de MLFLOW ---
+experiment_name: "Impacto de Publicacion"
+
+# --- Configuración de la Comparación ---
+# Elige la metrica a tomar de referencia para elegir el modelo ganador entre RMSE , MAE , R2. Coloca la metrica con el siguiente formato : "val_rmse" , "val_mae", "val_r2"
+metric_to_optimize: "val_rmse"
+# Elige como presentar los resultados como Ascending / Acendentes o Descending para decensentes 
+optimize_mode: "ASCENDING" 
+
+# Listado de modelos a evaluar en este experimento
+# 'class_path' indica la ruta para importar de Python
+# 'scaler' es el escalador a utilizar en los datos que se utilziaran para evaluar los modelos 
+# -----------------------------------------------
+models_to_try:
+
+  Ridge:
+    class_path: "sklearn.linear_model.Ridge"
+    scaler: "standard"
+
+  RandomForestBase:
+    class_path: "sklearn.ensemble.RandomForestRegressor"
+    scaler: "robust" #No es necesario en los arboles 
+
+  KNeighbors:
+    class_path: "sklearn.neighbors.KNeighborsRegressor"
+    scaler: "standard"
+
