@@ -14,7 +14,12 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, RobustScaler
 from sklearn.metrics import root_mean_squared_error, mean_absolute_error, r2_score
 from sklearn.model_selection import cross_validate
-
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler, PowerTransformer
+from sklearn.compose import ColumnTransformer
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+#import classify_numeric_columns from cleaning_eda
 
 # =========================================================
 # Base: DataProcessor (mínima)
@@ -85,25 +90,52 @@ class ModelTrainer(DataProcessor):
     # --------------------------
     # Pipeline
     # --------------------------
+
+    def _build_preprocessor(self) -> ColumnTransformer:
+        """
+        Crea el ColumnTransformer basado en las columnas de self.X_train, para aplicar transformaciones de forma avanzada por tipo de elemento en cada columna
+        """
+        
+        # Buscando columnas numericas int o float
+        numeric_features = self.X_train.select_dtypes(include=np.number).columns
+        
+        # clasificamos columnas de acuerdo al tipo 
+        cols_bin, cols_no_bin = classify_numeric_columns(self.X_train[numeric_features]) # type: ignore
+
+        # Procesamos columnas numericas no binarias 
+        numeric_non_binary_transformer = Pipeline(steps=[
+            ('imputer', SimpleImputer(strategy='median')),
+            ('power', PowerTransformer(method='yeo-johnson')),
+            ('scaler', StandardScaler())
+        ])
+        
+        # Procesamos columnas binarias 
+        binary_transformer = Pipeline(steps=[
+            ('imputer', SimpleImputer(strategy='most_frequent'))
+        ])
+
+        # 5. Preparamos el procesamiento principal
+        preprocessor = ColumnTransformer(transformers=[
+            ('num_non_bin', numeric_non_binary_transformer, cols_no_bin),
+            ('num_bin', binary_transformer, cols_bin)
+        ], remainder='passthrough')
+        
+        return preprocessor
+
+
     def _create_pipeline(
         self,
         estimator: BaseEstimator,
-        scaler: Optional[str] = None
+        preprocessor: ColumnTransformer
     ) -> Pipeline:
         """
-        Crea el Pipeline con preprocesamiento opcional y el estimador.
+        Creamos el pipeline final con el modelo y el preprocesamiento
         """
-        steps: Iterable[tuple[str, Any]] = []
-
-        if scaler is not None:
-            if scaler.lower() == "standard":
-                steps.append(("scaler", StandardScaler()))
-            elif scaler.lower() == "robust":
-                steps.append(("scaler", RobustScaler()))
-            else:
-                raise ValueError("scaler debe ser 'standard', 'robust' o None")
-
-        steps.append(("model", estimator))
+        # Unimos preprocesador y modelo en un Pipeline
+        steps = [
+            ("preprocessor", preprocessor),
+            ("model", estimator)
+        ]
         return Pipeline(steps)
 
     # --------------------------

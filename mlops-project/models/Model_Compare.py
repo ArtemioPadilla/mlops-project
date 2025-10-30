@@ -70,7 +70,7 @@ class Experimento:
         
         # Creamos el Proceso Padre para MLFLOW el cual contiene toda la ejecucion del codigo
         
-        with mlflow.start_run(run_name="ModelComparisonRun") as parent_run:
+        with mlflow.start_run(run_name="Comparacion de modelos ") as parent_run:
             mlflow.log_param("config_file", self.config_path)
             
             print(f"Proceso Padre Iniciado para MLFLOW: {parent_run.info.run_id}")
@@ -106,7 +106,7 @@ class Experimento:
                         # Evaluamos el modelo entrenado
                         metrics = trainer.evaluate_model() 
                         
-                        # Registramos Resultados en MLFlow
+                        # Guardamos Resultados en MLFlow
                         mlflow.log_metric("train_rmse", metrics['train']['rmse'])
                         mlflow.log_metric("train_r2",   metrics['train']['r2'])
                         mlflow.log_metric("val_rmse",   metrics['val']['rmse'])
@@ -114,7 +114,7 @@ class Experimento:
                         mlflow.log_metric("test_rmse",  metrics['test']['rmse'])
                         mlflow.log_metric("test_r2",    metrics['test']['r2'])
                         
-                        #Guardamos el modelo resultante
+                        #Guardamos el modelo 
                         mlflow.sklearn.log_model(trainer.pipeline, "model_pipeline")
                         
                         print(f"MLflow: {model_name} registrado (Run ID: {child_run.info.run_id})")
