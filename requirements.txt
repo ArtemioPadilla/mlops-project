@@ -32,7 +32,7 @@ scikit-learn        # Machine Learning tradicional
 # ===========================
 # 🔄 MLOps y control de experimentos
 # ===========================
-dvc                 # Data Version Control
+dvc[s3]                 # Data Version Control
 mlflow              # Seguimiento de experimentos y modelos
 cookiecutter-data-science  # Plantilla estándar de proyectos de DS
 evidently           # Monitoreo de modelos
