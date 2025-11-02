@@ -124,9 +124,8 @@ docs/assets/images/*.png
 cython_debug/
 .ruff_cache/
 .pypirc
-<<<<<<< HEAD
 docs/*.html
 docs/*.png
-/models
-=======
->>>>>>> f974f1c4 (Add comprehensive documentation and troubleshooting guide)
+
+# Snyk Security Extension - AI Rules (auto-generated)
+.github/instructions/snyk_rules.instructions.md

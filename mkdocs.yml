@@ -87,6 +87,7 @@ nav:
       - Environment Variables: configuration/environment.md
 
   - API Reference:
+      - Overview: api-reference/index.md
       - Preprocessing API: api-reference/preprocessing.md
       - Modeling API: api-reference/modeling.md
       - CLI API: api-reference/cli.md
@@ -132,6 +133,39 @@ markdown_extensions:
 plugins:
   - search
   - mermaid2
+  - mkdocstrings:
+      enabled: true
+      default_handler: python
+      handlers:
+        python:
+          paths: [.]
+          options:
+            # Docstring parsing
+            docstring_style: numpy
+            docstring_section_style: table
+
+            # Display options
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_object_full_path: false
+            show_category_heading: true
+            show_if_no_docstring: false
+
+            # Member options
+            members_order: source
+            show_signature: true
+            show_signature_annotations: true
+            separate_signature: true
+
+            # Additional sections
+            show_bases: true
+            show_inheritance_diagram: false
+
+            # Filtering
+            filters:
+              - "!^_"
+              - "!^__(?!init)__"
 
 # Extra
 extra:
