@@ -1,41 +1,63 @@
 # CLI API Reference
 
-Command-line interface reference.
+Complete API reference for command-line interfaces. All CLI modules are auto-generated from source code docstrings.
 
-## preprocess_cli
+## Preprocessing CLI
 
-**Module**: `mlops_online_news_popularity.cli.preprocess_cli`
+::: mlops_online_news_popularity.cli.preprocess_cli
+    options:
+      show_root_heading: true
+      show_source: true
+      members_order: source
+      show_signature_annotations: true
 
-### Command
+## Training CLI
 
-```bash
-python -m mlops_online_news_popularity.cli.preprocess_cli [OPTIONS]
-```
+::: mlops_online_news_popularity.cli.train_cli
+    options:
+      show_root_heading: true
+      show_source: true
+      members_order: source
+      show_signature_annotations: true
 
-### Options
+---
 
-- `--input`, `-i TEXT`: Path to raw CSV
-- `--output-dir`, `-o TEXT`: Output directory
-- `--target`, `-t TEXT`: Target column name
-- `--corr-threshold FLOAT`: Correlation threshold
+## Usage Examples
 
-## train_cli
+### Preprocessing Pipeline
 
-**Module**: `mlops_online_news_popularity.cli.train_cli`
-
-### Commands
-
-#### train-compare
-
-```bash
-python -m mlops_online_news_popularity.cli.train_cli train-compare CONFIG_PATH
-```
-
-#### train-single
+Run the complete preprocessing pipeline:
 
 ```bash
-python -m mlops_online_news_popularity.cli.train_cli train-single [OPTIONS]
+# Basic usage
+python -m mlops_online_news_popularity.cli.preprocess_cli \
+  --input data/raw/online_news_modified.csv \
+  --output-dir data/processed
+
+# With custom correlation threshold
+python -m mlops_online_news_popularity.cli.preprocess_cli \
+  --input data/raw/online_news_modified.csv \
+  --output-dir data/processed \
+  --corr-threshold 0.85
 ```
 
-Options:
-- `--model TEXT`: Model type (ridge, randomforest, kneighbors, xgboost)
+### Model Training
+
+Train a single model:
+
+```bash
+# Train Ridge regression
+python -m mlops_online_news_popularity.cli.train_cli train-single --model ridge
+
+# Train Random Forest
+python -m mlops_online_news_popularity.cli.train_cli train-single --model randomforest
+```
+
+Train and compare multiple models:
+
+```bash
+# Compare all models from config file
+python -m mlops_online_news_popularity.cli.train_cli train-compare config/models.yaml
+```
+
+See the [CLI Commands Guide](../cli/commands.md) for more examples and detailed usage.
