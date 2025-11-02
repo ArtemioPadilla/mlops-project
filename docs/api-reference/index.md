@@ -4,11 +4,11 @@ Auto-generated API documentation from Python docstrings using mkdocstrings.
 
 ## Quick Navigation
 
-| Module | Description |
-|--------|-------------|
-| [Preprocessing](preprocessing.md) | Data cleaning, processing, and splitting |
-| [Modeling](modeling.md) | Model training and experiment tracking |
-| [CLI](cli.md) | Command-line interfaces |
+| Module | Description | Classes/Functions |
+|--------|-------------|-------------------|
+| [Preprocessing](preprocessing.md) | Data cleaning, processing, and splitting | DataProcessor, DataCleaner, DataExplorer, DataLoader, DataComparator, utils |
+| [Modeling](modeling.md) | Model training and experiment tracking | ModelTrainer, Experimento |
+| [CLI](cli.md) | Command-line interfaces | preprocess_cli, train_cli |
 
 ## Module Structure
 

@@ -1,57 +1,50 @@
 # Preprocessing API Reference
 
-Complete API reference for preprocessing modules.
+Complete API reference for preprocessing modules. All classes and functions are auto-generated from source code docstrings.
 
 ## DataProcessor
 
-**Class**: `mlops_online_news_popularity.preprocessing.DataProcessor`
-
-### Constructor
-
-```python
-DataProcessor(
-    filepath: str,
-    target_col: str = "shares",
-    cols_to_drop: Optional[List[str]] = None,
-    lda_cols: Optional[List[str]] = None,
-    correlation_threshold: float = 0.9
-)
-```
-
-### Methods
-
-#### `process() -> DataProcessor`
-Execute complete preprocessing pipeline.
-
-#### `load_and_clean() -> pd.DataFrame`
-Load and clean raw data.
+::: mlops_online_news_popularity.preprocessing.DataProcessor
+    options:
+      show_root_heading: true
+      show_source: true
+      members_order: source
 
 ## DataCleaner
 
-**Class**: `mlops_online_news_popularity.preprocessing.DataCleaner`
-
-### Methods
-
-All methods return `self` for chaining.
-
-- `clean_primary_key(key: str) -> DataCleaner`
-- `force_numeric(exclude: List[str] = None) -> DataCleaner`
-- `apply_business_rules() -> DataCleaner`
-- `normalize_lda(lda_cols: List[str]) -> DataCleaner`
-- `get_df() -> pd.DataFrame`
+::: mlops_online_news_popularity.preprocessing.DataCleaner
+    options:
+      show_root_heading: true
+      show_source: true
+      members_order: source
 
 ## DataExplorer
 
-**Class**: `mlops_online_news_popularity.preprocessing.DataExplorer`
+::: mlops_online_news_popularity.preprocessing.DataExplorer
+    options:
+      show_root_heading: true
+      show_source: true
+      members_order: source
 
-Static methods for EDA.
+## DataLoader
 
-- `explore_data(data: pd.DataFrame) -> None`
-- `plot_correlation_matrix(data: pd.DataFrame, title: str, save_path: str = None) -> None`
-- `generate_profiling_report(data: pd.DataFrame, title: str, output_dir: str, filename: str) -> None`
+::: mlops_online_news_popularity.preprocessing.DataLoader
+    options:
+      show_root_heading: true
+      show_source: true
+      members_order: source
 
-## Utils
+## DataComparator
 
-**Function**: `classify_numeric_columns(df: pd.DataFrame) -> Tuple[List[str], List[str]]`
+::: mlops_online_news_popularity.preprocessing.DataComparator
+    options:
+      show_root_heading: true
+      show_source: true
+      members_order: source
 
-Returns: (binary_cols, non_binary_cols)
+## Utility Functions
+
+::: mlops_online_news_popularity.preprocessing.utils
+    options:
+      show_root_heading: true
+      show_source: true
