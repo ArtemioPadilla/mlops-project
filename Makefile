@@ -84,7 +84,7 @@ pipeline: preprocess train
 ## Start MLflow UI server
 .PHONY: mlflow-ui
 mlflow-ui:
-	mlflow ui --backend-store-uri sqlite:///mlflow/dev/mlflow.db --port 5001
+	mlflow ui --backend-store-uri sqlite:///mlflow_artifacts/dev/mlflow.db --port 5001
 
 ## Build documentation
 .PHONY: docs

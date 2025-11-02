@@ -180,6 +180,13 @@ class Experimento:
             mlflow.log_param("metric_to_optimize", self.config.get("metric_to_optimize"))
             mlflow.log_param("optimize_mode", self.config.get("optimize_mode"))
 
+            # Log global preprocessing summary
+            mlflow.log_param("data_source", self.data.filepath)
+            mlflow.log_param("total_features", self.data.X_train.shape[1])
+            mlflow.log_param("total_samples", len(self.data.X_train) + len(self.data.X_val) + len(self.data.X_test))
+            mlflow.log_param("preprocessing_correlation_threshold", self.data.correlation_threshold)
+            logger.info("Logged global preprocessing configuration to parent run")
+
             # Add tags for filtering
             mlflow.set_tag("run_type", "parent")
             mlflow.set_tag("num_models", num_models)
@@ -207,6 +214,38 @@ class Experimento:
                         mlflow.log_param("class_path", model_cfg["class_path"])
                         mlflow.log_param("target_transform", "log")  # Always log transform
 
+                        # Log all model hyperparameters
+                        model_params = estimator.get_params(deep=True)
+                        loggable_params = {
+                            f"model_{k}": v
+                            for k, v in model_params.items()
+                            if isinstance(v, (int, float, str, bool, type(None)))
+                        }
+                        mlflow.log_params(loggable_params)
+                        logger.info(f"Logged {len(loggable_params)} model hyperparameters")
+
+                        # Log DataProcessor configuration
+                        mlflow.log_param("data_filepath", self.data.filepath)
+                        mlflow.log_param("target_col", self.data.target_col)
+                        mlflow.log_param("correlation_threshold", self.data.correlation_threshold)
+                        mlflow.log_param("cols_to_drop", ",".join(self.data.cols_to_drop))
+                        if self.data.cols_dropped_correlation:
+                            mlflow.log_param(
+                                "cols_dropped_correlation",
+                                ",".join(self.data.cols_dropped_correlation),
+                            )
+                        else:
+                            mlflow.log_param("cols_dropped_correlation", "none")
+
+                        # Log dataset sizes and feature information
+                        mlflow.log_param("train_size", len(self.data.X_train))
+                        mlflow.log_param("val_size", len(self.data.X_val))
+                        mlflow.log_param("test_size", len(self.data.X_test))
+                        mlflow.log_param("num_features", self.data.X_train.shape[1])
+                        mlflow.log_param("num_binary_features", len(self.data.cols_bin))
+                        mlflow.log_param("num_nonbinary_features", len(self.data.cols_no_bin))
+                        logger.info("Logged DataProcessor configuration and dataset statistics")
+
                         # Creating ModelTrainer object to train and evaluate models
                         trainer = ModelTrainer(
                             data_processor=self.data,
@@ -216,6 +255,15 @@ class Experimento:
 
                         # Transform target if needed (log transformation for skewed data)
                         trainer.transform_target(apply_log=True)
+
+                        # Log preprocessing pipeline details
+                        mlflow.log_param("imputation_strategy_nonbinary", "median")
+                        mlflow.log_param("imputation_strategy_binary", "most_frequent")
+                        mlflow.log_param("power_transform_method", "yeo-johnson")
+                        mlflow.log_param("scaling_method", "standard")
+                        if trainer.baseline_rmse is not None:
+                            mlflow.log_metric("baseline_rmse", trainer.baseline_rmse)
+                        logger.info("Logged preprocessing pipeline configuration")
 
                         # Training and evaluating the model
                         trainer.train_model()

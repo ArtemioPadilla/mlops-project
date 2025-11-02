@@ -160,7 +160,7 @@ python -c "from mlops_online_news_popularity import preprocessing, modeling, con
 ls data/raw/online_news_modified.csv
 
 # 3. Check MLflow database
-ls mlflow/dev/mlflow.db
+ls mlflow_artifacts/dev/mlflow.db
 ```
 
 ---

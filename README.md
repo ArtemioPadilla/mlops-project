@@ -99,15 +99,15 @@ python -m mlops_online_news_popularity.cli.train_cli train-single --model random
 
 The project includes two MLflow environments:
 
-- **Dev Environment** (`mlflow/dev/`): For actual model development (default, port 5001)
-- **Quickstart Environment** (`mlflow/quickstart/`): For learning/tutorials (port 5000)
+- **Dev Environment** (`mlflow_artifacts/dev/`): For actual model development (default, port 5001)
+- **Quickstart Environment** (`mlflow_artifacts/quickstart/`): For learning/tutorials (port 5000)
 
 ```bash
 # View dev experiments (default)
 make mlflow-ui
 
 # Or manually specify environment
-mlflow ui --backend-store-uri sqlite:///mlflow/dev/mlflow.db --port 5001
+mlflow ui --backend-store-uri sqlite:///mlflow_artifacts/dev/mlflow.db --port 5001
 ```
 
 ## DVC Data Versioning

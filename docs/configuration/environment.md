@@ -8,7 +8,7 @@ Create `.env` in project root:
 
 ```bash
 # MLflow tracking
-MLFLOW_TRACKING_URI=sqlite:///mlflow/dev/mlflow.db
+MLFLOW_TRACKING_URI=sqlite:///mlflow_artifacts/dev/mlflow.db
 
 # Optional: Other settings
 LOG_LEVEL=DEBUG
@@ -20,12 +20,12 @@ LOG_LEVEL=DEBUG
 
 Override default MLflow tracking URI.
 
-**Default**: `sqlite:///mlflow/dev/mlflow.db`
+**Default**: `sqlite:///mlflow_artifacts/dev/mlflow.db`
 
 **Examples**:
 ```bash
 # Use quickstart environment
-MLFLOW_TRACKING_URI=sqlite:///mlflow/quickstart/mlflow.db
+MLFLOW_TRACKING_URI=sqlite:///mlflow_artifacts/quickstart/mlflow.db
 
 # Use remote server
 MLFLOW_TRACKING_URI=http://mlflow-server:5000

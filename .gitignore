@@ -87,13 +87,16 @@ outputs/
 # =========================
 # 🔬 MLflow
 # =========================
-/mlflow/quickstart/
+# Note: Directory renamed from "mlflow" to "mlflow_artifacts" to avoid
+# namespace conflict with the mlflow Python package
+/mlflow_artifacts/quickstart/*
+!/mlflow_artifacts/quickstart/.gitkeep
 mlruns/
-mlflow/dev/*.db
-mlflow/dev/*.db-shm
-mlflow/dev/*.db-wal
-mlflow/dev/mlruns/
-mlflow/dev/artifacts/
+mlflow_artifacts/dev/*.db
+mlflow_artifacts/dev/*.db-shm
+mlflow_artifacts/dev/*.db-wal
+mlflow_artifacts/dev/mlruns/
+mlflow_artifacts/dev/artifacts/
 
 # =========================
 # 📊 DVC
