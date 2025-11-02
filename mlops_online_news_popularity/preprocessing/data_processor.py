@@ -8,9 +8,9 @@ feature engineering, and train/val/test splitting.
 
 from typing import List, Optional, Tuple
 
+from loguru import logger
 import numpy as np
 import pandas as pd
-from loguru import logger
 from sklearn.model_selection import train_test_split
 
 from .data_cleaning import DataCleaner

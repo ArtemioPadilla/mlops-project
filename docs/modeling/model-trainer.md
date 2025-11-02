@@ -43,7 +43,7 @@ graph LR
     Model --> Predictions
 
     style NB fill:#a8dadc
-    style B fill:#457b9d
+    style B fill:#64b5f6
 ```
 
 ## Key Methods

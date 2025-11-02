@@ -85,8 +85,8 @@ flowchart TD
     Phase4 --> Output([Clean Splits])
 
     style Phase1 fill:#a8dadc
-    style Phase2 fill:#457b9d
-    style Phase3 fill:#1d3557
+    style Phase2 fill:#64b5f6
+    style Phase3 fill:#90caf9
     style Phase4 fill:#e63946
 ```
 

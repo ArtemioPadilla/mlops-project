@@ -22,7 +22,7 @@ A complete MLOps pipeline for predicting the popularity (shares) of online news 
 
 ```bash
 # 1. Clone the repository
-git clone <repository-url>
+git clone https://github.com/ArtemioPadilla/mlops-project.git
 cd mlops-project
 
 # 2. Create virtual environment
