@@ -17,7 +17,12 @@ python-dotenv       # Manejo de variables de entorno
 # 📦 Gestión y documentación
 # ===========================
 pip                 # Instalador de paquetes
-mkdocs              # Generador de documentación
+mkdocs>=1.6.0       # Generador de documentación
+mkdocs-material>=9.0.0  # Material theme para MkDocs
+pymdown-extensions>=10.0  # Extensiones de Markdown
+mkdocs-mermaid2-plugin>=1.1.0  # Soporte para diagramas Mermaid
+mkdocstrings[python]>=0.24.0  # Auto-generación de API docs desde docstrings
+mkdocstrings-python>=1.7.0  # Handler de Python para mkdocstrings
 
 # ===========================
 # 🔬 Ciencia de datos y ML
@@ -32,7 +37,7 @@ scikit-learn        # Machine Learning tradicional
 # ===========================
 # 🔄 MLOps y control de experimentos
 # ===========================
-dvc                 # Data Version Control
+dvc[s3]                 # Data Version Control
 mlflow              # Seguimiento de experimentos y modelos
 cookiecutter-data-science  # Plantilla estándar de proyectos de DS
 evidently           # Monitoreo de modelos

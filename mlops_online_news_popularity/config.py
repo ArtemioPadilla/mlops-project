@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -21,6 +22,15 @@ MODELS_DIR = PROJ_ROOT / "models"
 REPORTS_DIR = PROJ_ROOT / "reports"
 FIGURES_DIR = REPORTS_DIR / "figures"
 
+# Documentation paths (for MkDocs and profiling reports)
+DOCS_DIR = PROJ_ROOT / "docs"
+PROFILING_REPORTS_DIR = DOCS_DIR / "assets" / "html"
+PROFILING_IMAGES_DIR = DOCS_DIR / "assets" / "images"
+
+# Ensure documentation directories exist
+PROFILING_REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+PROFILING_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
+
 # MLflow tracking
 MLFLOW_DIR = PROJ_ROOT / "mlflow"
 MLFLOW_QUICKSTART_DIR = MLFLOW_DIR / "quickstart"
@@ -35,8 +45,6 @@ MLFLOW_QUICKSTART_URI = f"sqlite:///{MLFLOW_QUICKSTART_DIR / 'mlflow.db'}"
 MLFLOW_DEV_URI = f"sqlite:///{MLFLOW_DEV_DIR / 'mlflow.db'}"
 
 # Allow environment variable override for MLflow tracking URI
-import os
-
 MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", MLFLOW_DEV_URI)
 
 # If tqdm is installed, configure loguru with tqdm.write

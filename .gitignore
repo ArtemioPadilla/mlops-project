@@ -99,8 +99,24 @@ mlflow/dev/artifacts/
 # 📊 DVC
 # Ignorar datasets, pero mantener los .dvc
 # =========================
-Data/*.csv
-!Data/*.dvc
+data
+# DVC config with credentials should not be versioned (use .dvc/config.example as template)
+.dvc/config
+.dvc/config.local
+.dvc/tmp/
+
+# =========================
+# 🤖 Models (use DVC for versioning)
+# =========================
+models/
+!models/.gitkeep
+
+# =========================
+# 📚 MkDocs
+# =========================
+site/
+docs/assets/html/*.html
+docs/assets/images/*.png
 
 # =========================
 # 🛠️ Otros
@@ -110,3 +126,6 @@ cython_debug/
 .pypirc
 docs/*.html
 docs/*.png
+
+# Snyk Security Extension - AI Rules (auto-generated)
+.github/instructions/snyk_rules.instructions.md
