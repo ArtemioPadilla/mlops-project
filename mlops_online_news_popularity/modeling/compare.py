@@ -13,10 +13,10 @@ from typing import Any, Dict
 
 import joblib
 from loguru import logger
-import yaml
-
 import mlflow
 from mlflow import MlflowClient
+import yaml
+
 from mlops_online_news_popularity.config import MODELS_DIR
 from mlops_online_news_popularity.modeling.train import ModelTrainer
 from mlops_online_news_popularity.preprocessing import DataProcessor
@@ -183,8 +183,13 @@ class Experimento:
             # Log global preprocessing summary
             mlflow.log_param("data_source", self.data.filepath)
             mlflow.log_param("total_features", self.data.X_train.shape[1])
-            mlflow.log_param("total_samples", len(self.data.X_train) + len(self.data.X_val) + len(self.data.X_test))
-            mlflow.log_param("preprocessing_correlation_threshold", self.data.correlation_threshold)
+            mlflow.log_param(
+                "total_samples",
+                len(self.data.X_train) + len(self.data.X_val) + len(self.data.X_test),
+            )
+            mlflow.log_param(
+                "preprocessing_correlation_threshold", self.data.correlation_threshold
+            )
             logger.info("Logged global preprocessing configuration to parent run")
 
             # Add tags for filtering

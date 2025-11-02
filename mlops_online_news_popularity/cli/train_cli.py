@@ -14,10 +14,10 @@ import json
 from pathlib import Path
 
 from loguru import logger
+import mlflow
 import pandas as pd
 import typer
 
-import mlflow
 from mlops_online_news_popularity.config import (
     MLFLOW_TRACKING_URI,
     MODELS_DIR,
