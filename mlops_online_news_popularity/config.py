@@ -32,7 +32,9 @@ PROFILING_REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 PROFILING_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
 
 # MLflow tracking
-MLFLOW_DIR = PROJ_ROOT / "mlflow"
+# Note: Directory renamed from "mlflow" to "mlflow_artifacts" to avoid
+# namespace conflict with the mlflow Python package
+MLFLOW_DIR = PROJ_ROOT / "mlflow_artifacts"
 MLFLOW_QUICKSTART_DIR = MLFLOW_DIR / "quickstart"
 MLFLOW_DEV_DIR = MLFLOW_DIR / "dev"
 

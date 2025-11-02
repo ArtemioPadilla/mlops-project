@@ -96,7 +96,7 @@ mlops-project/
 ├── data/                 # Data directory (DVC managed)
 │   ├── raw/             # Original immutable data
 │   └── processed/       # Train/val/test splits
-├── mlflow/              # MLflow tracking databases
+├── mlflow_artifacts/              # MLflow tracking databases
 │   ├── dev/            # Development experiments
 │   └── quickstart/     # Learning/tutorial experiments
 ├── models/              # Saved model artifacts

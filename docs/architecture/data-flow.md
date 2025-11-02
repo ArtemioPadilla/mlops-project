@@ -358,7 +358,7 @@ mlops-project/
 │   └── processed/              # DVC tracked
 ├── models/
 │   └── ridge_best_*.pkl        # Best models
-└── mlflow/
+└── mlflow_artifacts/
     └── dev/
         ├── mlflow.db           # Experiment metadata
         └── mlruns/             # Model artifacts

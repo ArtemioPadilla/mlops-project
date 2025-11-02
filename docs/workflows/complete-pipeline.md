@@ -46,7 +46,7 @@ make train
 4. Save to `models/`
 
 **Outputs**:
-- MLflow experiments in `mlflow/dev/`
+- MLflow experiments in `mlflow_artifacts/dev/`
 - Best model in `models/`
 
 ### 3. View Results

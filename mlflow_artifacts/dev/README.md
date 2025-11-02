@@ -43,7 +43,7 @@ From the project root:
 
 ```bash
 cd mlops-project
-mlflow ui --backend-store-uri sqlite:///mlflow/dev/mlflow.db
+mlflow ui --backend-store-uri sqlite:///mlflow_artifacts/dev/mlflow.db
 ```
 
 Then open http://localhost:5000 in your browser.

@@ -16,8 +16,8 @@ from mlops_online_news_popularity.config import (
     DOCS_DIR,           # docs/
     PROFILING_REPORTS_DIR,  # docs/assets/html/
     PROFILING_IMAGES_DIR,   # docs/assets/images/
-    MLFLOW_DEV_DIR,     # mlflow/dev/
-    MLFLOW_QUICKSTART_DIR,  # mlflow/quickstart/
+    MLFLOW_DEV_DIR,     # mlflow_artifacts/dev/
+    MLFLOW_QUICKSTART_DIR,  # mlflow_artifacts/quickstart/
 )
 ```
 
@@ -48,5 +48,5 @@ Create `.env` file to override:
 
 ```bash
 # .env
-MLFLOW_TRACKING_URI=sqlite:///mlflow/quickstart/mlflow.db
+MLFLOW_TRACKING_URI=sqlite:///mlflow_artifacts/quickstart/mlflow.db
 ```

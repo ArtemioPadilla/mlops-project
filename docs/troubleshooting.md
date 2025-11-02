@@ -96,7 +96,7 @@ make mlflow-ui
 **Solution**:
 ```bash
 # Reset MLflow tracking (WARNING: deletes all experiments)
-rm -rf mlflow/dev/
+rm -rf mlflow_artifacts/dev/
 
 # Re-run training
 make train
@@ -112,13 +112,13 @@ make train
 ```python
 from mlops_online_news_popularity.config import MLFLOW_TRACKING_URI
 print(MLFLOW_TRACKING_URI)
-# Should show: sqlite:///mlflow/dev/mlflow.db
+# Should show: sqlite:///mlflow_artifacts/dev/mlflow.db
 ```
 
 Override via `.env` file if needed:
 ```bash
 # .env
-MLFLOW_TRACKING_URI=sqlite:///mlflow/dev/mlflow.db
+MLFLOW_TRACKING_URI=sqlite:///mlflow_artifacts/dev/mlflow.db
 ```
 
 ---

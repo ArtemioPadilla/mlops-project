@@ -14,10 +14,10 @@ import json
 from pathlib import Path
 
 from loguru import logger
+import mlflow
 import pandas as pd
 import typer
 
-import mlflow
 from mlops_online_news_popularity.config import (
     MLFLOW_TRACKING_URI,
     MODELS_DIR,
@@ -63,6 +63,13 @@ class MockDataProcessor:
         self.cols_bin = metadata["cols_bin"]
         self.cols_no_bin = metadata["cols_no_bin"]
         self.numeric_features = metadata["numeric_features"]
+
+        # Add attributes required for MLflow parameter logging
+        self.filepath = metadata.get("filepath", "unknown")
+        self.target_col = metadata.get("target_col", "shares")
+        self.correlation_threshold = metadata.get("correlation_threshold", 0.9)
+        self.cols_to_drop = metadata.get("cols_to_drop", [])
+        self.cols_dropped_correlation = metadata.get("cols_dropped_correlation", [])
 
         logger.info(
             f"Loaded splits: train={len(self.X_train)}, "
