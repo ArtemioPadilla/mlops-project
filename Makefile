@@ -67,6 +67,30 @@ create_environment:
 data: requirements
 	$(PYTHON_INTERPRETER) mlops_online_news_popularity/dataset.py
 
+## Run preprocessing pipeline (creates train/val/test splits)
+.PHONY: preprocess
+preprocess:
+	$(PYTHON_INTERPRETER) -m mlops_online_news_popularity.cli.preprocess_cli
+
+## Train a single model with MLflow tracking
+.PHONY: train
+train:
+	$(PYTHON_INTERPRETER) -m mlops_online_news_popularity.cli.train_cli train-single
+
+## Train and compare multiple models from config
+.PHONY: train-compare
+train-compare:
+	$(PYTHON_INTERPRETER) -m mlops_online_news_popularity.cli.train_cli train-compare data/config.yaml
+
+## Run complete MLOps pipeline (preprocess + train)
+.PHONY: pipeline
+pipeline: preprocess train
+
+## Start MLflow UI server
+.PHONY: mlflow-ui
+mlflow-ui:
+	mlflow ui --backend-store-uri sqlite:///mlflow/dev/mlflow.db --port 5001
+
 
 #################################################################################
 # Self Documenting Commands                                                     #

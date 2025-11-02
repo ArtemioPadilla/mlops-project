@@ -1,0 +1,7 @@
+[core]
+    remote = myremote
+['remote "myremote"']
+    url = s3://dvc-bucket-equipo-27
+    # Uncomment and set your AWS credentials:
+    # access_key_id = YOUR_AWS_ACCESS_KEY_ID
+    # secret_access_key = YOUR_AWS_SECRET_ACCESS_KEY
