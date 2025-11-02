@@ -112,6 +112,13 @@ models/
 !models/.gitkeep
 
 # =========================
+# 📚 MkDocs
+# =========================
+site/
+docs/assets/html/*.html
+docs/assets/images/*.png
+
+# =========================
 # 🛠️ Otros
 # =========================
 cython_debug/
