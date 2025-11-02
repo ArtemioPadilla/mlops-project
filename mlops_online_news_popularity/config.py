@@ -22,6 +22,15 @@ MODELS_DIR = PROJ_ROOT / "models"
 REPORTS_DIR = PROJ_ROOT / "reports"
 FIGURES_DIR = REPORTS_DIR / "figures"
 
+# Documentation paths (for MkDocs and profiling reports)
+DOCS_DIR = PROJ_ROOT / "docs"
+PROFILING_REPORTS_DIR = DOCS_DIR / "assets" / "html"
+PROFILING_IMAGES_DIR = DOCS_DIR / "assets" / "images"
+
+# Ensure documentation directories exist
+PROFILING_REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+PROFILING_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
+
 # MLflow tracking
 MLFLOW_DIR = PROJ_ROOT / "mlflow"
 MLFLOW_QUICKSTART_DIR = MLFLOW_DIR / "quickstart"

@@ -7,12 +7,17 @@ using MLflow for experiment tracking and model comparison.
 
 import importlib
 import inspect
+import joblib
+from datetime import datetime
+from pathlib import Path
 from typing import Any, Dict
 
 from loguru import logger
 import yaml
 
 import mlflow
+from mlflow import MlflowClient
+from mlops_online_news_popularity.config import MODELS_DIR
 from mlops_online_news_popularity.modeling.train import ModelTrainer
 from mlops_online_news_popularity.preprocessing import DataProcessor
 
@@ -33,7 +38,7 @@ from mlops_online_news_popularity.preprocessing import DataProcessor
 #
 # 3. Create the Experimento object with the processed data:
 #       experiment = Experimento(
-#           config_path="data/config.yaml",
+#           config_path="config/models.yaml",
 #           data_processor=processor
 #       )
 #
@@ -88,10 +93,39 @@ class Experimento:
         self.experiment_name = self.config["experiment_name"]
         self.models_config = self.config["models_to_try"]
 
-        # Initialize MLflow
-        mlflow.set_experiment(self.experiment_name)
+        # Initialize MLflow with deleted experiment handling
+        self._setup_mlflow_experiment()
         logger.info(f"MLflow: Experiment to run '{self.experiment_name}'")
         print(f"MLflow: Experimento a Correr '{self.experiment_name}'")
+
+    def _setup_mlflow_experiment(self) -> None:
+        """
+        Set up MLflow experiment with proper handling of deleted experiments.
+
+        If the experiment exists but is deleted, it will be automatically restored.
+        This prevents the common error: "Cannot set a deleted experiment as active".
+        """
+        client = MlflowClient()
+        experiment = client.get_experiment_by_name(self.experiment_name)
+
+        if experiment is not None and experiment.lifecycle_stage == "deleted":
+            logger.warning(
+                f"Experiment '{self.experiment_name}' (ID: {experiment.experiment_id}) "
+                f"is deleted. Restoring it automatically..."
+            )
+            print(
+                f"⚠️  El experimento '{self.experiment_name}' fue eliminado previamente. "
+                f"Restaurándolo automáticamente..."
+            )
+
+            # Restore the deleted experiment
+            client.restore_experiment(experiment.experiment_id)
+
+            logger.success(f"Experiment '{self.experiment_name}' restored successfully")
+            print(f"✓ Experimento '{self.experiment_name}' restaurado exitosamente")
+
+        # Now safely set the experiment (either existing active or newly restored)
+        mlflow.set_experiment(self.experiment_name)
 
     def _instantiate_model(self, class_path: str) -> Any:
         """
@@ -125,16 +159,31 @@ class Experimento:
 
     def ejecuta_experimentos(self) -> None:
         """
-        Run all models specified in config.yaml and compare them.
+        Run all models specified in the config file and compare them.
 
         This creates a parent run in MLflow and nested child runs for each model.
         Each model is trained, evaluated, and logged to MLflow.
         """
 
-        # Create the parent process for MLFLOW which contains the entire code execution
+        # Create unique run name with timestamp
+        timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+        num_models = len(self.models_config)
+        parent_run_name = f"{self.experiment_name}-{num_models}models-{timestamp}"
 
-        with mlflow.start_run(run_name="Comparacion de modelos ") as parent_run:
+        # Create the parent process for MLFLOW which contains the entire code execution
+        with mlflow.start_run(run_name=parent_run_name) as parent_run:
+            # Log configuration metadata
             mlflow.log_param("config_file", self.config_path)
+            mlflow.log_param("experiment_name", self.experiment_name)
+            mlflow.log_param("num_models", num_models)
+            mlflow.log_param("models_trained", ",".join(self.models_config.keys()))
+            mlflow.log_param("metric_to_optimize", self.config.get("metric_to_optimize"))
+            mlflow.log_param("optimize_mode", self.config.get("optimize_mode"))
+
+            # Add tags for filtering
+            mlflow.set_tag("run_type", "parent")
+            mlflow.set_tag("num_models", num_models)
+            mlflow.set_tag("timestamp", timestamp)
 
             logger.info(f"Parent process started for MLFLOW: {parent_run.info.run_id}")
             print(f"Proceso Padre Iniciado para MLFLOW: {parent_run.info.run_id}")
@@ -153,6 +202,7 @@ class Experimento:
                         estimator = self._instantiate_model(model_cfg["class_path"])
 
                         # Add MLFlow tags
+                        mlflow.set_tag("run_type", "child")
                         mlflow.set_tag("model_name", model_name)
                         mlflow.log_param("class_path", model_cfg["class_path"])
                         mlflow.log_param("target_transform", "log")  # Always log transform
@@ -200,12 +250,14 @@ class Experimento:
 
     # -------------------------------------------------------------------------
     # Function that obtains the best model by comparing the contents in
-    # config.yaml previously saved in MLFLOW
+    # the config file previously saved in MLFLOW
     # -------------------------------------------------------------------------
     def mejor_modelo(self) -> Dict[str, Any]:
         """
         Connect with MLFlow to review which model is considered the best in the
-        experiment run from config.yaml.
+        experiment run from the config file.
+
+        Also saves the best model locally to the models/ directory.
 
         Returns
         -------
@@ -220,8 +272,19 @@ class Experimento:
         logger.info("Comparing results to obtain the best model in MLFlow")
         print("\nComparando Resultados para obtencion del mejor modelo en MLFlow")
 
-        metric_to_optimize = self.config["metric_to_optimize"].replace("_", ".")
+        # Get metric to optimize (use underscore format for MLflow order_by)
+        metric_to_optimize = self.config["metric_to_optimize"]
         order_mode = self.config["optimize_mode"]
+
+        # Validate and normalize optimize_mode for MLflow
+        order_mode_map = {
+            "ASCENDING": "ASC",
+            "ASC": "ASC",
+            "DESCENDING": "DESC",
+            "DESC": "DESC"
+        }
+        order_mode = order_mode_map.get(order_mode.upper(), "ASC")
+        logger.info(f"Using order mode: {order_mode}")
 
         # Get the experiment ID to evaluate
         experiment = mlflow.get_experiment_by_name(self.experiment_name)
@@ -230,22 +293,41 @@ class Experimento:
             print("No se encontro el ID, revisar datos guardados o el ID")
             return {}
 
-        # Search for experiment results
+        # Find the latest parent run (most recent execution)
+        # This ensures we only compare models from the current run, not old ones
+        parent_runs_df = mlflow.search_runs(
+            experiment_ids=[experiment.experiment_id],
+            filter_string="tags.run_type = 'parent'",
+            order_by=["start_time DESC"],
+            max_results=1,
+        )
+
+        if parent_runs_df.empty:
+            logger.error("No parent run found in experiment")
+            print("No se encontró ningún parent run en el experimento")
+            return {}
+
+        latest_parent_id = parent_runs_df.iloc[0]["run_id"]
+        logger.info(f"Searching models from latest parent run: {latest_parent_id}")
+
+        # Search for child runs ONLY from the latest parent execution (use dotted format for MLflow)
         best_run_df = mlflow.search_runs(
             experiment_ids=[experiment.experiment_id],
+            filter_string=f"tags.mlflow.parentRunId = '{latest_parent_id}'",
             order_by=[f"metrics.{metric_to_optimize} {order_mode}"],
             max_results=1,  # search for the best model
         )
 
         if best_run_df.empty:
-            logger.warning("No experiments found")
-            print("No se Encontraron Experimentos ejecutados")
+            logger.warning("No child runs found for the latest parent")
+            print("No se encontraron child runs para el parent más reciente")
             return {}
 
         # Export the information of the best result
         best_run_data = best_run_df.iloc[0]
         best_model_name = best_run_data["tags.model_name"]
         best_run_id = best_run_data["run_id"]
+        # Use underscore format for DataFrame access
         best_metric_score = best_run_data[f"metrics.{metric_to_optimize}"]
 
         # Save the address of the best model found
@@ -262,6 +344,27 @@ class Experimento:
         print(f"Run ID:     {best_run_id}")
         print(f"URI Modelo: {model_artifact_uri}")
         print("=" * 82)
+
+        # Save best model locally
+        try:
+            logger.info("Loading and saving best model locally...")
+            model = mlflow.sklearn.load_model(model_artifact_uri)
+
+            # Create filename with timestamp
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            model_filename = f"{best_model_name.lower()}_best_{timestamp}.pkl"
+            model_path = MODELS_DIR / model_filename
+
+            # Ensure models directory exists
+            MODELS_DIR.mkdir(parents=True, exist_ok=True)
+
+            # Save model
+            joblib.dump(model, model_path)
+            logger.success(f"Best model saved locally: {model_path}")
+            print(f"\nModelo guardado localmente: {model_path}")
+        except Exception as e:
+            logger.error(f"Failed to save model locally: {e}")
+            print(f"\nAdvertencia: No se pudo guardar el modelo localmente: {e}")
 
         return {
             "model_name": best_model_name,

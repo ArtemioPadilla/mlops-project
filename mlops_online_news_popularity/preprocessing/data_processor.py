@@ -10,6 +10,7 @@ from typing import List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
+from loguru import logger
 from sklearn.model_selection import train_test_split
 
 from .data_cleaning import DataCleaner
@@ -163,6 +164,16 @@ class DataProcessor:
 
         X = df.drop(self.target_col, axis=1)
         y = df[self.target_col]
+
+        # Remove rows where target is NaN
+        nan_mask = y.isna()
+        nan_count = nan_mask.sum()
+        if nan_count > 0:
+            logger.warning(f"Found {nan_count} rows with NaN in target '{self.target_col}'")
+            valid_mask = ~nan_mask
+            X = X[valid_mask]
+            y = y[valid_mask]
+            logger.info(f"Removed {nan_count} rows with NaN in target. New shape: {y.shape}")
 
         print(f"Target: {self.target_col}")
         print(f"Target shape: {y.shape}")

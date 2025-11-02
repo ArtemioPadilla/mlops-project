@@ -6,7 +6,7 @@ and saves the best model based on validation metrics.
 
 Usage:
     python -m mlops_online_news_popularity.cli.train_cli --help
-    python -m mlops_online_news_popularity.cli.train_cli --config data/config.yaml
+    python -m mlops_online_news_popularity.cli.train_cli --config config/models.yaml
     python -m mlops_online_news_popularity.cli.train_cli --model ridge
 """
 
@@ -238,7 +238,7 @@ def train_compare(
     This command uses the Experimento class to train multiple models
     defined in a YAML configuration file and compare them in MLflow.
 
-    Example config.yaml:
+    Example config/models.yaml:
         experiment_name: "Model Comparison"
         metric_to_optimize: "val_rmse"
         optimize_mode: "ASC"

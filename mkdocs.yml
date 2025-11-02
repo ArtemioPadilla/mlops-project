@@ -1,0 +1,143 @@
+# Project Information
+site_name: MLOps Online News Popularity
+site_description: Complete MLOps pipeline for predicting online news popularity
+site_author: equipo-27
+site_url: https://artemiopadilla.github.io/mlops-project/
+
+# Repository
+repo_url: https://github.com/artemiopadilla/mlops-project
+repo_name: mlops-project
+edit_uri: edit/main/docs/
+
+# Directory Configuration
+docs_dir: docs
+site_dir: site
+
+# Theme Configuration
+theme:
+  name: material
+  palette:
+    # Light mode
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - navigation.expand
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+  icon:
+    repo: fontawesome/brands/github
+
+# Navigation Structure
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation & Setup: getting-started.md
+      - Quick Start: workflows/quick-start.md
+      - Troubleshooting: troubleshooting.md
+
+  - Architecture:
+      - Overview: architecture/overview.md
+      - Data Flow: architecture/data-flow.md
+      - Components: architecture/components.md
+      - Design Patterns: architecture/design-patterns.md
+
+  - Preprocessing:
+      - Overview: preprocessing/overview.md
+      - DataProcessor: preprocessing/data-processor.md
+      - DataCleaner: preprocessing/data-cleaner.md
+      - Utilities: preprocessing/utilities.md
+
+  - Modeling:
+      - ModelTrainer: modeling/model-trainer.md
+      - Experiment Tracking: modeling/experiment-tracking.md
+      - Model Selection: modeling/model-selection.md
+
+  - CLI Reference:
+      - Commands Overview: cli/commands.md
+      - Preprocessing CLI: cli/preprocess-cli.md
+      - Training CLI: cli/train-cli.md
+
+  - Workflows:
+      - Complete Pipeline: workflows/complete-pipeline.md
+      - Development Workflow: workflows/development.md
+      - Experiment Workflow: workflows/experiments.md
+      - DVC Data Versioning: workflows/dvc.md
+
+  - Configuration:
+      - Path Management: configuration/paths.md
+      - Models YAML: configuration/models-yaml.md
+      - Environment Variables: configuration/environment.md
+
+  - API Reference:
+      - Preprocessing API: api-reference/preprocessing.md
+      - Modeling API: api-reference/modeling.md
+      - CLI API: api-reference/cli.md
+
+  - Best Practices:
+      - Preventing Data Leakage: best-practices/data-leakage.md
+      - Code Quality: best-practices/code-quality.md
+      - Testing: best-practices/testing.md
+
+  - Data Profiling: data-profiling.md
+  - Contributing: contributing.md
+  - Changelog: changelog.md
+
+# Extensions
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - def_list
+  - pymdownx.arithmatex:
+      generic: true
+
+# Plugins
+plugins:
+  - search
+  - mermaid2
+
+# Extra
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/artemiopadilla/mlops-project
+
+# Copyright
+copyright: Copyright &copy; 2024 equipo-27

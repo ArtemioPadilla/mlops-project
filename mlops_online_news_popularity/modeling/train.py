@@ -264,7 +264,7 @@ class ModelTrainer:
         Dict[str, float]
             Dictionary with rmse, mae, r2
         """
-        rmse = root_mean_squared_error(y_true, y_pred, squared=False)
+        rmse = root_mean_squared_error(y_true, y_pred)
         mae = mean_absolute_error(y_true, y_pred)
         r2 = r2_score(y_true, y_pred)
         return {"rmse": float(rmse), "mae": float(mae), "r2": float(r2)}
@@ -481,7 +481,7 @@ def main(
         from mlops_online_news_popularity.modeling.train import ModelTrainer
     """
     logger.info("Model training module loaded")
-    logger.info("For usage examples, see class docstring or CLAUDE.md")
+    logger.info("For usage examples, see class docstring of ModelTrainer")
 
 
 if __name__ == "__main__":
