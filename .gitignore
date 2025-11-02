@@ -106,6 +106,12 @@ data
 .dvc/tmp/
 
 # =========================
+# 🤖 Models (use DVC for versioning)
+# =========================
+models/
+!models/.gitkeep
+
+# =========================
 # 🛠️ Otros
 # =========================
 cython_debug/
@@ -113,3 +119,4 @@ cython_debug/
 .pypirc
 docs/*.html
 docs/*.png
+/models
