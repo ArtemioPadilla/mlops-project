@@ -99,8 +99,8 @@ mlflow/dev/artifacts/
 # 📊 DVC
 # Ignorar datasets, pero mantener los .dvc
 # =========================
-Data/*.csv
-!Data/*.dvc
+data/*.csv
+!data/*.dvc
 
 # =========================
 # 🛠️ Otros

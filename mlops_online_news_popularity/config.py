@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -35,8 +36,6 @@ MLFLOW_QUICKSTART_URI = f"sqlite:///{MLFLOW_QUICKSTART_DIR / 'mlflow.db'}"
 MLFLOW_DEV_URI = f"sqlite:///{MLFLOW_DEV_DIR / 'mlflow.db'}"
 
 # Allow environment variable override for MLflow tracking URI
-import os
-
 MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", MLFLOW_DEV_URI)
 
 # If tqdm is installed, configure loguru with tqdm.write
