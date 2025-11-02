@@ -8,7 +8,7 @@ Thank you for your interest in contributing to the MLOps Online News Popularity 
 
 ```bash
 # Fork the repository on GitHub, then:
-git clone https://github.com/YOUR_USERNAME/mlops-project.git
+git clone https://github.com/artemiopadilla/mlops-project.git
 cd mlops-project
 ```
 

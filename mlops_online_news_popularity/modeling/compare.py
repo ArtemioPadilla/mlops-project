@@ -5,13 +5,13 @@ This module provides the Experimento class for comparing multiple regression mod
 using MLflow for experiment tracking and model comparison.
 """
 
+from datetime import datetime
 import importlib
 import inspect
-import joblib
-from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict
 
+import joblib
 from loguru import logger
 import yaml
 
@@ -277,12 +277,7 @@ class Experimento:
         order_mode = self.config["optimize_mode"]
 
         # Validate and normalize optimize_mode for MLflow
-        order_mode_map = {
-            "ASCENDING": "ASC",
-            "ASC": "ASC",
-            "DESCENDING": "DESC",
-            "DESC": "DESC"
-        }
+        order_mode_map = {"ASCENDING": "ASC", "ASC": "ASC", "DESCENDING": "DESC", "DESC": "DESC"}
         order_mode = order_mode_map.get(order_mode.upper(), "ASC")
         logger.info(f"Using order mode: {order_mode}")
 

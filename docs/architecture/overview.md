@@ -110,8 +110,8 @@ graph TB
     MLflow --> Artifacts
 
     style DataProcessor fill:#a8dadc
-    style ModelTrainer fill:#457b9d
-    style Experimento fill:#1d3557
+    style ModelTrainer fill:#64b5f6
+    style Experimento fill:#90caf9
     style MLflow fill:#f1faee
 ```
 

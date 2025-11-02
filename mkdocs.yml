@@ -173,5 +173,17 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/artemiopadilla/mlops-project
 
+  # Mermaid2 theme configuration for better contrast
+  mermaid2:
+    arguments:
+      theme: 'default'  # Use default light theme for better readability
+      themeVariables:
+        primaryColor: '#e3f2fd'
+        primaryTextColor: '#000000'
+        primaryBorderColor: '#1976d2'
+        lineColor: '#1976d2'
+        secondaryColor: '#bbdefb'
+        tertiaryColor: '#90caf9'
+
 # Copyright
 copyright: Copyright &copy; 2024 equipo-27

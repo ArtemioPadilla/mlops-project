@@ -80,8 +80,8 @@ graph TB
     Data --> MT
 
     style DP fill:#a8dadc
-    style MT fill:#457b9d
-    style Exp fill:#1d3557
+    style MT fill:#64b5f6
+    style Exp fill:#90caf9
     style MLF fill:#f1faee
 ```
 
