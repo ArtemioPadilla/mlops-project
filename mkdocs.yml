@@ -70,6 +70,14 @@ nav:
       - Experiment Tracking: modeling/experiment-tracking.md
       - Model Selection: modeling/model-selection.md
 
+  - Serving & Deployment:
+      - Overview: serving/index.md
+      - Getting Started: serving/getting-started.md
+      - API Reference: serving/api-reference.md
+      - Deployment Guide: serving/deployment.md
+      - Testing: serving/testing.md
+      - Troubleshooting: serving/troubleshooting.md
+
   - CLI Reference:
       - Commands Overview: cli/commands.md
       - Preprocessing CLI: cli/preprocess-cli.md

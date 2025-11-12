@@ -48,8 +48,14 @@ sdv                 # Synthetic Data Vault (generación de datos sintéticos)
 # ⚡ APIs y despliegue
 # ===========================
 fastapi             # Framework para crear APIs rápidas y eficientes
+uvicorn[standard]   # ASGI server para FastAPI (con dependencias completas)
+python-multipart    # Soporte para file uploads en FastAPI
 
 # ===========================
 # 🧪 Testing
 # ===========================
 pytest              # Testing unitario y de integración
+pytest-cov          # Cobertura de código para tests
+pytest-asyncio      # Soporte para tests async/await
+pytest-mock         # Utilidades de mocking para pytest
+httpx               # Cliente HTTP para testing de FastAPI (requerido por TestClient)
