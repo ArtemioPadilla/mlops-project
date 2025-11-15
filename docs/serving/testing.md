@@ -2,6 +2,72 @@
 
 This guide covers testing the model serving API at different levels: manual testing, automated tests, and performance testing.
 
+## Testing Strategy Overview
+
+```mermaid
+graph TB
+    subgraph "Testing Pyramid"
+        subgraph "Top: E2E & Performance"
+            PERF[Performance Tests<br/>Locust, Apache Bench<br/>Load & Stress Testing]
+        end
+
+        subgraph "Middle: Integration Tests"
+            INT_API[API Integration Tests<br/>34 tests<br/>FastAPI TestClient]
+            INT_END[Endpoint Testing<br/>All 5 endpoints<br/>Success + Error cases]
+        end
+
+        subgraph "Base: Unit Tests"
+            UNIT_SCHEMA[Schema Validation<br/>15 tests<br/>Pydantic Models]
+            UNIT_CONFIG[Configuration<br/>13 tests<br/>Environment Setup]
+            UNIT_HANDLER[ModelHandler<br/>25 tests<br/>Pipeline Logic]
+        end
+    end
+
+    subgraph "Manual Testing"
+        MANUAL_SWAGGER[Swagger UI<br/>Interactive Testing]
+        MANUAL_CURL[cURL Commands<br/>Script Testing]
+        MANUAL_PYTHON[Python Scripts<br/>example/*.py]
+    end
+
+    subgraph "Coverage & Quality"
+        COV[Code Coverage<br/>80%+ Target<br/>pytest-cov]
+        LINT[Code Quality<br/>Black, Flake8<br/>Type Checking]
+    end
+
+    PERF -.->|Validates| INT_API
+    INT_API -.->|Uses| UNIT_HANDLER
+    INT_API -.->|Uses| UNIT_SCHEMA
+    INT_API -.->|Uses| UNIT_CONFIG
+
+    style PERF fill:#fce4ec
+    style INT_API fill:#fff3e0
+    style INT_END fill:#fff3e0
+    style UNIT_SCHEMA fill:#e8f5e9
+    style UNIT_CONFIG fill:#e8f5e9
+    style UNIT_HANDLER fill:#e8f5e9
+    style COV fill:#e3f2fd
+```
+
+### Test Coverage Summary
+
+**Total**: 87 automated tests
+
+| Category | Tests | Coverage | Files |
+|----------|-------|----------|-------|
+| **Unit Tests** | 53 | 99%+ | schemas, config, model_handler |
+| **Integration Tests** | 34 | 80%+ | API endpoints, CORS, docs |
+| **Performance Tests** | Manual | N/A | Locust, Apache Bench |
+
+#### Breakdown by Module
+
+```mermaid
+pie title Test Distribution (87 total)
+    "API Endpoints (Integration)" : 34
+    "ModelHandler (Unit)" : 25
+    "Schemas (Unit)" : 15
+    "Configuration (Unit)" : 13
+```
+
 ## Manual Testing
 
 ### Using Swagger UI

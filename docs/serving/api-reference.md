@@ -226,6 +226,50 @@ print(f"Predicted shares: {result['predicted_shares']:,}")
 
 Make predictions for multiple news articles at once.
 
+```mermaid
+sequenceDiagram
+    participant Client
+    participant FastAPI
+    participant Validation
+    participant ModelHandler
+    participant Model
+
+    Client->>FastAPI: POST /predict/batch<br/>{instances: [article1, article2, ...]}
+
+    FastAPI->>Validation: Validate BatchRequest
+    Validation->>Validation: Check instance count ≤ 1000
+
+    alt Too many instances (>1000)
+        Validation-->>Client: 400 Bad Request<br/>Batch size limit exceeded
+    end
+
+    Validation->>Validation: Validate each article<br/>(59 features × N instances)
+
+    alt Any validation fails
+        Validation-->>Client: 422 Validation Error<br/>Details per instance
+    end
+
+    Validation->>ModelHandler: handle(list_of_dicts)
+
+    loop For each article
+        ModelHandler->>ModelHandler: preprocess(article)
+    end
+
+    ModelHandler->>Model: inference(batch_dataframe)
+    Note over Model: Batch prediction is faster<br/>than N individual predictions
+
+    Model-->>ModelHandler: predictions array<br/>(log scale)
+
+    loop For each prediction
+        ModelHandler->>ModelHandler: postprocess(prediction)<br/>expm1 + round
+    end
+
+    ModelHandler-->>FastAPI: {predictions: [{...}, {...}, ...]}
+    FastAPI-->>Client: 200 OK + JSON array
+
+    Note over Client,Model: Total time: ~200-500ms for 100 articles
+```
+
 **Request Body**: JSON object with array of instances
 
 **Content-Type**: `application/json`
@@ -307,6 +351,72 @@ for i, pred in enumerate(result["predictions"], 1):
 #### `POST /predict/batch/csv`
 
 Upload a CSV file for batch predictions.
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant FastAPI
+    participant FileHandler
+    participant CSVParser
+    participant ModelHandler
+    participant Model
+
+    Client->>FastAPI: POST /predict/batch/csv<br/>multipart/form-data
+
+    FastAPI->>FileHandler: Receive file upload
+    FileHandler->>FileHandler: Check content-type<br/>must be text/csv
+
+    alt Invalid file type
+        FileHandler-->>Client: 400 Bad Request<br/>Only CSV files allowed
+    end
+
+    FileHandler->>FileHandler: Check file size ≤ 10MB
+
+    alt File too large
+        FileHandler-->>Client: 413 Payload Too Large<br/>File exceeds 10MB
+    end
+
+    FileHandler->>CSVParser: Read CSV content
+    CSVParser->>CSVParser: Parse to DataFrame
+
+    alt Malformed CSV
+        CSVParser-->>Client: 400 Bad Request<br/>Invalid CSV format
+    end
+
+    CSVParser->>CSVParser: Validate headers<br/>Check 59 required features
+
+    alt Missing features
+        CSVParser-->>Client: 422 Validation Error<br/>Missing columns: [...]
+    end
+
+    CSVParser->>CSVParser: Check row count ≤ 1000
+
+    alt Too many rows
+        CSVParser-->>Client: 400 Bad Request<br/>Row limit exceeded
+    end
+
+    CSVParser->>CSVParser: Convert to dict list
+
+    CSVParser->>ModelHandler: handle(records)
+
+    loop For each row
+        ModelHandler->>ModelHandler: preprocess(row)<br/>validate + convert
+    end
+
+    ModelHandler->>Model: inference(dataframe)
+    Note over Model: Batch inference<br/>optimized for CSV
+
+    Model-->>ModelHandler: predictions (log scale)
+
+    loop For each prediction
+        ModelHandler->>ModelHandler: postprocess()<br/>expm1 + round
+    end
+
+    ModelHandler-->>FastAPI: {predictions: [...]}
+    FastAPI-->>Client: 200 OK + JSON array
+
+    Note over Client,Model: Typical: 300-600ms for 100 rows
+```
 
 **Request Body**: Multipart form data with CSV file
 

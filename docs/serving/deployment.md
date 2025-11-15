@@ -2,6 +2,42 @@
 
 This guide covers deploying the model serving API in various environments, from local Docker to cloud platforms.
 
+## Deployment Options Overview
+
+```mermaid
+graph TD
+    START[Model Serving API]
+
+    START --> DOCKER[Docker Single Container]
+    START --> SWARM[Docker Swarm]
+    START --> K8S[Kubernetes]
+    START --> ECS[AWS ECS/Fargate]
+    START --> CLOUDRUN[GCP Cloud Run]
+
+    DOCKER -->|Best For| DOCKER_USE[• Local development<br/>• Simple deployments<br/>• Single server]
+    SWARM -->|Best For| SWARM_USE[• Multi-node clusters<br/>• Docker native<br/>• Medium scale]
+    K8S -->|Best For| K8S_USE[• Large scale<br/>• Multi-cloud<br/>• Advanced orchestration]
+    ECS -->|Best For| ECS_USE[• AWS ecosystem<br/>• Managed service<br/>• Auto-scaling]
+    CLOUDRUN -->|Best For| CR_USE[• Serverless<br/>• Pay-per-use<br/>• Auto-scaling]
+
+    style DOCKER fill:#e3f2fd
+    style SWARM fill:#fff3e0
+    style K8S fill:#e8f5e9
+    style ECS fill:#fce4ec
+    style CLOUDRUN fill:#f3e5f5
+```
+
+### Deployment Comparison Table
+
+| Feature | Docker | Docker Swarm | Kubernetes | AWS ECS | GCP Cloud Run |
+|---------|--------|--------------|------------|---------|---------------|
+| **Complexity** | Low | Medium | High | Medium | Low |
+| **Setup Time** | Minutes | 30 mins | Hours | 30 mins | Minutes |
+| **Scaling** | Manual | Auto | Auto | Auto | Auto |
+| **Cost** | Low | Medium | High | Medium | Pay-per-use |
+| **Maintenance** | Low | Medium | High | Low | Very Low |
+| **Best For** | Dev/Test | Small Prod | Enterprise | AWS Users | Serverless |
+
 ## Docker Deployment
 
 ### Quick Start with Docker
@@ -31,6 +67,93 @@ The build process:
 - Final size: ~300MB (including RandomForest model)
 - Non-root user for security
 - Health check included
+
+#### Docker Container Architecture
+
+```mermaid
+graph TB
+    subgraph "Docker Host"
+        subgraph "Container: online-news-predictor"
+            subgraph "Application Layer (mluser:1000)"
+                UVICORN[Uvicorn Server<br/>Port 8000<br/>Workers: 1]
+                FASTAPI[FastAPI Application]
+                MODEL_H[ModelHandler<br/>Singleton]
+            end
+
+            subgraph "Volume Mounts (Read-Only)"
+                VOL_MODELS[/app/models<br/>→ host/models]
+                VOL_MLF[/app/mlflow_artifacts<br/>→ host/mlflow_artifacts]
+            end
+
+            subgraph "Logging"
+                VOL_LOGS[/app/logs<br/>→ host/logs]
+                LOGURU[Loguru Logger<br/>stderr]
+            end
+
+            subgraph "Health Check"
+                HEALTH_CMD[curl -f<br/>http://localhost:8000/health]
+                HEALTH_INT[Interval: 30s<br/>Timeout: 10s<br/>Retries: 3]
+            end
+
+            UVICORN --> FASTAPI
+            FASTAPI --> MODEL_H
+            MODEL_H -.->|Read Model| VOL_MODELS
+            MODEL_H -.->|Read Artifacts| VOL_MLF
+            FASTAPI --> LOGURU
+            LOGURU --> VOL_LOGS
+            HEALTH_CMD --> FASTAPI
+        end
+
+        PORT[Port Mapping<br/>Host:8000 → Container:8000]
+        NETWORK[Bridge Network<br/>ml-network]
+    end
+
+    CLIENT[External Client] -->|HTTP Request| PORT
+    PORT --> UVICORN
+
+    HEALTH_INT -.->|Check| HEALTH_CMD
+
+    style VOL_MODELS fill:#e1f5e1
+    style VOL_MLF fill:#e1f5e1
+    style VOL_LOGS fill:#ffe1e1
+    style HEALTH_CMD fill:#e1e5ff
+    style CLIENT fill:#fff4e1
+```
+
+#### Multi-Stage Build Process
+
+```mermaid
+flowchart TD
+    subgraph "Stage 1: Builder"
+        B1[FROM python:3.10-slim]
+        B2[Install build tools<br/>gcc, g++, make]
+        B3[COPY requirements.txt]
+        B4[pip install -r requirements.txt]
+        B5[Build wheels]
+
+        B1 --> B2 --> B3 --> B4 --> B5
+    end
+
+    subgraph "Stage 2: Runtime"
+        R1[FROM python:3.10-slim]
+        R2[Install runtime deps<br/>curl only]
+        R3[Create mluser:1000<br/>non-root user]
+        R4[COPY from builder:<br/>site-packages + bins]
+        R5[COPY app code:<br/>mlops_online_news_popularity]
+        R6[COPY config:<br/>pyproject.toml, README.md]
+        R7[pip install -e .]
+        R8[USER mluser]
+        R9[HEALTHCHECK configured]
+        R10[CMD uvicorn ...]
+
+        R1 --> R2 --> R3 --> R4 --> R5 --> R6 --> R7 --> R8 --> R9 --> R10
+    end
+
+    B5 -.->|Copy artifacts| R4
+
+    style B5 fill:#90EE90
+    style R10 fill:#90EE90
+```
 
 #### Run
 
@@ -194,6 +317,82 @@ docker service update --image ml-service:v2.0.0 ml-service
 ### Option 3: Kubernetes
 
 **Best for**: Large-scale, enterprise deployments
+
+#### Kubernetes Architecture
+
+```mermaid
+graph TB
+    subgraph "External"
+        USERS[Users/Clients]
+    end
+
+    subgraph "Kubernetes Cluster"
+        subgraph "Ingress Layer"
+            INGRESS[Ingress Controller<br/>NGINX/Traefik]
+        end
+
+        subgraph "Service Layer"
+            SVC[Service: ml-service<br/>Type: LoadBalancer<br/>Port: 80→8000]
+        end
+
+        subgraph "Pod Layer (Replicas: 3)"
+            POD1[Pod 1<br/>ml-service container]
+            POD2[Pod 2<br/>ml-service container]
+            POD3[Pod 3<br/>ml-service container]
+        end
+
+        subgraph "Storage Layer"
+            PVC[PersistentVolumeClaim<br/>models-pvc]
+            PV[PersistentVolume<br/>NFS/EBS/GCP Disk]
+        end
+
+        subgraph "ConfigMap & Secrets"
+            CM[ConfigMap<br/>ml-service-config]
+            SECRET[Secret<br/>API Keys/Creds]
+        end
+
+        subgraph "Monitoring"
+            PROBE_L[Liveness Probe<br/>/health every 10s]
+            PROBE_R[Readiness Probe<br/>/health every 5s]
+            HPA[HorizontalPodAutoscaler<br/>Min: 2, Max: 10<br/>CPU: 70%]
+        end
+    end
+
+    USERS -->|HTTPS| INGRESS
+    INGRESS -->|HTTP| SVC
+
+    SVC -.->|Load Balance| POD1
+    SVC -.->|Load Balance| POD2
+    SVC -.->|Load Balance| POD3
+
+    POD1 -->|Mount| PVC
+    POD2 -->|Mount| PVC
+    POD3 -->|Mount| PVC
+
+    PVC -->|Bound to| PV
+
+    POD1 -.->|Read| CM
+    POD1 -.->|Read| SECRET
+
+    PROBE_L -.->|Check| POD1
+    PROBE_L -.->|Check| POD2
+    PROBE_L -.->|Check| POD3
+
+    PROBE_R -.->|Check| POD1
+    PROBE_R -.->|Check| POD2
+    PROBE_R -.->|Check| POD3
+
+    HPA -.->|Scale| POD1
+    HPA -.->|Scale| POD2
+    HPA -.->|Scale| POD3
+
+    style INGRESS fill:#e3f2fd
+    style SVC fill:#e8f5e9
+    style PVC fill:#fff3e0
+    style PV fill:#fff3e0
+    style HPA fill:#fce4ec
+    style USERS fill:#fff4e1
+```
 
 #### Kubernetes Deployment YAML
 
