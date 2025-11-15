@@ -139,18 +139,20 @@ See `.dvc/config` for remote storage configuration.
 │   ├── raw/             <- The original, immutable data dump
 │   └── processed/       <- The final, canonical data sets for modeling (train/val/test splits)
 │
-├── mlflow/              <- MLflow tracking databases and artifacts
+├── mlflow_artifacts/    <- MLflow tracking databases and artifacts
 │   ├── dev/             <- Development environment (default)
 │   └── quickstart/      <- Learning/tutorial environment
 │
 ├── models/              <- Trained and serialized models (.pkl files)
 │
-├── notebooks/           <- Jupyter notebooks for experimentation and EDA
-│   ├── 02_clean_preprocess.ipynb
-│   ├── news_online_preprocess.ipynb
-│   ├── online_news_ml_models.ipynb
-│   ├── mlflow-quickstart.ipynb
-│   └── ...
+├── notebooks/           <- Jupyter notebooks (numbered in workflow order)
+│   ├── 01_news_online_eda.ipynb              <- Exploratory data analysis
+│   ├── 02_clean_preprocess.ipynb             <- Initial data cleaning
+│   ├── 03_news_online_preprocess.ipynb       <- Advanced preprocessing
+│   ├── 04_online_news_ml_models.ipynb        <- Model training and evaluation
+│   ├── 05_mlflow_quickstart.ipynb            <- MLflow tutorial
+│   ├── 06_testing_news_online_popularity.ipynb <- Testing and validation
+│   └── archive/                              <- Deprecated notebooks
 │
 ├── docs/                <- Documentation + data profiling reports
 │   ├── docs/            <- MkDocs documentation source
