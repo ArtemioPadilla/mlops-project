@@ -1,0 +1,46 @@
+services:
+  ml-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ml-service:latest
+    container_name: online-news-predictor
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount models directory (contains trained model artifacts)
+      - ./models:/app/models:ro
+      # Mount MLflow artifacts (for loading models from MLflow)
+      - ./mlflow_artifacts:/app/mlflow_artifacts:ro
+      # Optional: mount logs directory
+      - ./logs:/app/logs
+    environment:
+      # Model configuration
+      - MODEL_NAME=${MODEL_NAME:-RandomForestBase}
+      - MODEL_LOAD_STRATEGY=${MODEL_LOAD_STRATEGY:-local}
+      - MODEL_PATH=${MODEL_PATH:-/app/models/randomforestbase_best_20251102_165526.pkl}
+
+      # MLflow configuration (if using mlflow load strategy)
+      - MLFLOW_TRACKING_URI=${MLFLOW_TRACKING_URI:-sqlite:///app/mlflow_artifacts/dev/mlflow.db}
+      - MLFLOW_RUN_ID=${MLFLOW_RUN_ID:-}
+
+      # API configuration
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - API_RELOAD=false
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    networks:
+      - ml-network
+
+networks:
+  ml-network:
+    driver: bridge
