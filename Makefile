@@ -4,7 +4,12 @@
 
 PROJECT_NAME = mlops-project
 PYTHON_VERSION = 3.10
-PYTHON_INTERPRETER = python3.10
+
+ifeq ($(OS),Windows_NT)
+    PYTHON_INTERPRETER = python
+else
+    PYTHON_INTERPRETER = python3.10
+endif
 
 #################################################################################
 # COMMANDS                                                                      #
