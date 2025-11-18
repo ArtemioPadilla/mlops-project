@@ -1,55 +1,55 @@
 # ===========================
 # 🛠️ Herramientas de formateo y estilo
 # ===========================
-black               # Formateador automático de código
-flake8              # Linter para detectar errores de estilo y sintaxis
-isort               # Organizador de imports
+black==25.11.0                      # Formateador automático de código
+flake8==7.3.0                       # Linter para detectar errores de estilo y sintaxis
+isort==7.0.0                        # Organizador de imports
 
 # ===========================
 # 📝 Utilidades y logging
 # ===========================
-loguru              # Logging simplificado y potente
-tqdm                # Barras de progreso para loops
-typer               # Creación de CLIs fáciles y elegantes
-python-dotenv       # Manejo de variables de entorno
+loguru==0.7.3                       # Logging simplificado y potente
+tqdm==4.67.1                        # Barras de progreso para loops
+typer==0.20.0                       # Creación de CLIs fáciles y elegantes
+python-dotenv==1.2.1                # Manejo de variables de entorno
 
 # ===========================
 # 📦 Gestión y documentación
 # ===========================
-pip                 # Instalador de paquetes
-mkdocs>=1.6.0       # Generador de documentación
-mkdocs-material>=9.0.0  # Material theme para MkDocs
-pymdown-extensions>=10.0  # Extensiones de Markdown
-mkdocs-mermaid2-plugin>=1.1.0  # Soporte para diagramas Mermaid
-mkdocstrings[python]>=0.24.0  # Auto-generación de API docs desde docstrings
-mkdocstrings-python>=1.7.0  # Handler de Python para mkdocstrings
+pip==25.3                           # Instalador de paquetes
+mkdocs==1.6.1                       # Generador de documentación
+mkdocs-material==9.7.0              # Material theme para MkDocs
+pymdown-extensions==10.17.1         # Extensiones de Markdown
+mkdocs-mermaid2-plugin==1.2.3       # Soporte para diagramas Mermaid
+mkdocstrings[python]==0.30.1        # Auto-generación de API docs desde docstrings
+mkdocstrings-python==1.19.0         # Handler de Python para mkdocstrings
 
 # ===========================
 # 🔬 Ciencia de datos y ML
 # ===========================
-numpy               # Cálculo numérico
-pandas              # Manipulación de datos en DataFrames
-scipy               # Funciones científicas y estadísticas
-matplotlib          # Gráficas básicas
-seaborn             # Gráficas estadísticas más elaboradas
-scikit-learn        # Machine Learning tradicional
+numpy==2.3.5                        # Cálculo numérico
+pandas==2.3.3                       # Manipulación de datos en DataFrames
+scipy==1.16.3                       # Funciones científicas y estadísticas
+matplotlib==3.10.7                  # Gráficas básicas
+seaborn==0.13.2                     # Gráficas estadísticas más elaboradas
+scikit-learn==1.7.2                 # Machine Learning tradicional
 
 # ===========================
 # 🔄 MLOps y control de experimentos
 # ===========================
-dvc[s3]                 # Data Version Control
-mlflow              # Seguimiento de experimentos y modelos
-cookiecutter-data-science  # Plantilla estándar de proyectos de DS
-evidently           # Monitoreo de modelos
-deepchecks          # Validaciones de calidad en ML
-sdv                 # Synthetic Data Vault (generación de datos sintéticos)
+dvc[s3]==3.64.0                     # Data Version Control
+mlflow==3.6.0                       # Seguimiento de experimentos y modelos
+cookiecutter-data-science==2.3.0    # Plantilla estándar de proyectos de DS
+evidently==0.7.16                   # Monitoreo de modelos
+deepchecks==0.19.1                  # Validaciones de calidad en ML
+sdv==1.29.0                         # Synthetic Data Vault (generación de datos sintéticos)
 
 # ===========================
 # ⚡ APIs y despliegue
 # ===========================
-fastapi             # Framework para crear APIs rápidas y eficientes
+fastapi==0.121.2                    # Framework para crear APIs rápidas y eficientes
 
 # ===========================
 # 🧪 Testing
 # ===========================
-pytest              # Testing unitario y de integración
+pytest==9.0.1                       # Testing unitario y de integración
