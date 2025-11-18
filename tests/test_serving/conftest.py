@@ -152,7 +152,7 @@ def test_client():
 
 
 @pytest.fixture
-def initialized_test_client(mock_sklearn_pipeline, temp_model_file, monkeypatch):
+def initialized_test_client(mock_sklearn_pipeline, temp_model_file):
     """
     Create a FastAPI TestClient with initialized model.
 
@@ -162,12 +162,11 @@ def initialized_test_client(mock_sklearn_pipeline, temp_model_file, monkeypatch)
     Args:
         mock_sklearn_pipeline: Mock sklearn pipeline fixture
         temp_model_file: Temporary model file path fixture
-        monkeypatch: pytest monkeypatch fixture for environment variables
     """
     from mlops_online_news_popularity.serving.app import app
     from mlops_online_news_popularity.serving.model_handler import get_model_handler
 
-    # Get handler first and reset any previous state
+    # Get handler and reset any previous state
     handler = get_model_handler()
     handler.initialized = False
     handler.model = None
@@ -177,12 +176,12 @@ def initialized_test_client(mock_sklearn_pipeline, temp_model_file, monkeypatch)
     if hasattr(handler, '_model_info'):
         handler._model_info = None
 
-    # NOW set environment variables (after reset)
-    monkeypatch.setenv("MODEL_LOAD_STRATEGY", "local")
-    monkeypatch.setenv("MODEL_PATH", str(temp_model_file))
-
-    # Initialize handler with the new environment
-    handler.initialize()
+    # Initialize handler with context dict (bypasses config.py env vars)
+    context = {
+        "load_strategy": "local",
+        "model_path": str(temp_model_file)
+    }
+    handler.initialize(context=context)
 
     # Create test client
     with TestClient(app) as client:
