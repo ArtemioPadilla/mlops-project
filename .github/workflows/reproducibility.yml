@@ -69,24 +69,38 @@ jobs:
         run: |
           make check-python
 
+      - name: Verify sample dataset exists
+        run: |
+          if [ ! -f "data/sample/online_news_sample.csv" ]; then
+            echo "❌ Sample dataset not found!"
+            echo "Expected: data/sample/online_news_sample.csv"
+            exit 1
+          fi
+          echo "✅ Sample dataset found ($(wc -l < data/sample/online_news_sample.csv) rows)"
+
       - name: Run reproducibility test
         run: |
           make test-reproducibility
         env:
           PYTHONHASHSEED: 42
+          REPRO_DATA_PATH: data/sample/online_news_sample.csv
 
       - name: Generate test summary
         if: always()
         run: |
           echo "## Reproducibility Test Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Dataset:** Sample data (2,000 rows from full dataset)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
           if [[ "${{ job.status }}" == "success" ]]; then
             echo "✅ **PASSED** - ML pipeline produces identical results across runs" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "**Validated:**" >> $GITHUB_STEP_SUMMARY
-            echo "- ✅ Data splits are identical (27750/5947/5947)" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Data splits are identical" >> $GITHUB_STEP_SUMMARY
             echo "- ✅ Model metrics are identical (RMSE, MAE, R²)" >> $GITHUB_STEP_SUMMARY
             echo "- ✅ Model predictions are identical" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "_Note: CI uses sample data. Run \`make test-reproducibility\` locally to test with full dataset._" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ **FAILED** - ML pipeline does NOT produce consistent results" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
@@ -165,8 +179,11 @@ jobs:
             <summary>Details</summary>
 
             - **Python Version:** 3.10
-            - **Test Duration:** ~10-15 minutes
+            - **Dataset:** Sample data (2,000 rows)
+            - **Test Duration:** ~5-10 minutes
             - **Validation:** Data splits, metrics, and predictions
+
+            _Note: CI uses sample dataset for testing. Run \`make test-reproducibility\` locally to validate with full dataset (~40k rows)._
 
             [View full workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
             </details>`;

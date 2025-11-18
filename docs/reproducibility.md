@@ -160,6 +160,23 @@ mlflow.sklearn.load_model("runs:/<run_id>/model_pipeline")
 
 ## Quick Validation
 
+### CI vs Local Testing
+
+The project uses **different datasets** for CI and local testing:
+
+| Environment | Dataset | Size | Purpose |
+|-------------|---------|------|---------|
+| **GitHub Actions CI** | `data/sample/online_news_sample.csv` | 2,000 rows | Fast validation in CI pipeline |
+| **Local Development** | `data/raw/online_news_modified.csv` | ~40,000 rows | Full validation with complete dataset |
+
+Both validate reproducibility correctly, but local testing with the full dataset provides more comprehensive validation.
+
+**Why use sample data in CI?**
+- ✅ Faster CI runs (~5-10 min vs ~15-20 min)
+- ✅ Sample data can be committed to git (no DVC setup needed)
+- ✅ Still validates reproducibility guarantees
+- ⚠️ Metrics will differ from local runs (different data size)
+
 ### Using Makefile Targets (Recommended)
 
 The project provides multiple Makefile targets for testing reproducibility:
@@ -253,6 +270,33 @@ make check-python
 - Verifying environment setup
 - Before running reproducibility tests
 - Debugging version issues
+
+---
+
+### Using Custom Datasets
+
+You can test reproducibility with any dataset using the `REPRO_DATA_PATH` environment variable:
+
+```bash
+# Test with sample data (fast, for CI)
+REPRO_DATA_PATH=data/sample/online_news_sample.csv bash scripts/test_reproducibility.sh
+
+# Test with full data (default)
+bash scripts/test_reproducibility.sh
+
+# Test with custom dataset
+REPRO_DATA_PATH=path/to/your/dataset.csv bash scripts/test_reproducibility.sh
+```
+
+### Regenerating Sample Dataset
+
+If you need to regenerate the sample dataset (e.g., after updating the full dataset):
+
+```bash
+python scripts/create_sample_data.py
+```
+
+This creates `data/sample/online_news_sample.csv` with 2,000 rows sampled from the full dataset.
 
 ---
 

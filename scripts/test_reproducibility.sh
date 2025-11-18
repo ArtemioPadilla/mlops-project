@@ -5,6 +5,10 @@
 # 1. Data preprocessing produces identical train/val/test splits
 # 2. Model training produces identical metrics and predictions
 # 3. Results are deterministic across runs
+#
+# Environment variables:
+#   REPRO_DATA_PATH - Path to input dataset (default: data/raw/online_news_modified.csv)
+#                     Use data/sample/online_news_sample.csv for CI testing
 
 set -e  # Exit on error
 
@@ -20,6 +24,9 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
 cd "$PROJECT_ROOT"
 
+# Configuration: data path (can be overridden with REPRO_DATA_PATH env var)
+DATA_PATH="${REPRO_DATA_PATH:-data/raw/online_news_modified.csv}"
+
 # Temporary directories for comparison
 RUN1_DIR="${PROJECT_ROOT}/.reproducibility_test/run1"
 RUN2_DIR="${PROJECT_ROOT}/.reproducibility_test/run2"
@@ -27,6 +34,8 @@ RUN2_DIR="${PROJECT_ROOT}/.reproducibility_test/run2"
 echo "==========================================="
 echo "REPRODUCIBILITY TEST"
 echo "==========================================="
+echo ""
+echo "Dataset: ${DATA_PATH}"
 echo ""
 
 # Cleanup function
@@ -37,6 +46,18 @@ cleanup() {
 
 # Set trap to cleanup on exit
 trap cleanup EXIT
+
+# Step 0: Verify dataset exists
+echo -e "${BLUE}Step 0: Verifying dataset exists...${NC}"
+if [ ! -f "$DATA_PATH" ]; then
+    echo -e "${RED}❌ Dataset not found: $DATA_PATH${NC}"
+    echo ""
+    echo "Please ensure the dataset exists, or set REPRO_DATA_PATH to a valid dataset:"
+    echo "  export REPRO_DATA_PATH=data/sample/online_news_sample.csv"
+    exit 1
+fi
+echo -e "${GREEN}✅ Dataset found: $DATA_PATH${NC}"
+echo ""
 
 # Step 1: Verify Python version
 echo -e "${BLUE}Step 1: Verifying Python version...${NC}"
@@ -102,7 +123,7 @@ rm -rf data/processed/*
 
 # Run preprocessing
 $PYTHON_CMD -m mlops_online_news_popularity.cli.preprocess_cli \
-    --input data/raw/online_news_modified.csv \
+    --input "$DATA_PATH" \
     --output-dir data/processed \
     --corr-threshold 0.9 \
     > /dev/null 2>&1
@@ -143,7 +164,7 @@ rm -f models/ridge_best_*.pkl
 echo "Preprocessing..."
 # Run preprocessing again
 $PYTHON_CMD -m mlops_online_news_popularity.cli.preprocess_cli \
-    --input data/raw/online_news_modified.csv \
+    --input "$DATA_PATH" \
     --output-dir data/processed \
     --corr-threshold 0.9 \
     > /dev/null 2>&1

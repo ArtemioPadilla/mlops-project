@@ -222,9 +222,24 @@ This workflow validates that the ML pipeline produces identical results across r
 3. Model training produces identical metrics
 4. Model predictions are identical across runs
 
+### Dataset Used in CI
+
+**Important:** The CI workflow uses a **sample dataset** for testing:
+
+- **CI Dataset:** `data/sample/online_news_sample.csv` (2,000 rows)
+- **Local Dataset:** `data/raw/online_news_modified.csv` (~40,000 rows)
+
+**Why sample data?**
+- ✅ Faster CI runs (~5-10 min vs ~15-20 min)
+- ✅ Sample data is committed to git (no DVC setup required)
+- ✅ Still validates reproducibility guarantees
+- ⚠️ Metrics will differ from local runs (different data size)
+
+The sample dataset is automatically used in CI via the `REPRO_DATA_PATH` environment variable. Local testing continues to use the full dataset.
+
 ### Duration
 
-~10-15 minutes per run
+~5-10 minutes per run (with sample data)
 
 ### Viewing Results
 
@@ -260,11 +275,11 @@ schedule:
 
 ## Workflow Comparison
 
-| Workflow | Purpose | Frequency | Duration |
-|----------|---------|-----------|----------|
-| **CI** ([`ci.yml`](../../.github/workflows/ci.yml)) | Tests + Lint | Every push/PR | ~3-4 min |
-| **Reproducibility** ([`reproducibility.yml`](../../.github/workflows/reproducibility.yml)) | ML pipeline validation | PRs to main, releases | ~10-15 min |
-| **Deploy Docs** | GitHub Pages deploy | Push to main | ~2 min |
+| Workflow | Purpose | Frequency | Duration | Dataset |
+|----------|---------|-----------|----------|---------|
+| **CI** ([`ci.yml`](../../.github/workflows/ci.yml)) | Tests + Lint | Every push/PR | ~3-4 min | N/A |
+| **Reproducibility** ([`reproducibility.yml`](../../.github/workflows/reproducibility.yml)) | ML pipeline validation | PRs to main, releases | ~5-10 min | Sample (2k rows) |
+| **Deploy Docs** | GitHub Pages deploy | Push to main | ~2 min | N/A |
 
 ---
 
