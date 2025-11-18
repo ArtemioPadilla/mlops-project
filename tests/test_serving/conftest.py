@@ -167,12 +167,21 @@ def initialized_test_client(mock_sklearn_pipeline, temp_model_file, monkeypatch)
     from mlops_online_news_popularity.serving.app import app
     from mlops_online_news_popularity.serving.model_handler import get_model_handler
 
-    # Set environment to use temp model
+    # Get handler first and reset any previous state
+    handler = get_model_handler()
+    handler.initialized = False
+    handler.model = None
+    # Clear any cached attributes that might reference old paths
+    if hasattr(handler, 'model_path'):
+        handler.model_path = None
+    if hasattr(handler, '_model_info'):
+        handler._model_info = None
+
+    # NOW set environment variables (after reset)
     monkeypatch.setenv("MODEL_LOAD_STRATEGY", "local")
     monkeypatch.setenv("MODEL_PATH", str(temp_model_file))
 
-    # Get model handler and initialize
-    handler = get_model_handler()
+    # Initialize handler with the new environment
     handler.initialize()
 
     # Create test client

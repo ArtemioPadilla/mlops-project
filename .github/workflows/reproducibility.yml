@@ -1,5 +1,10 @@
 name: Reproducibility Test
 
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
 on:
   # Manual trigger from GitHub UI
   workflow_dispatch:
