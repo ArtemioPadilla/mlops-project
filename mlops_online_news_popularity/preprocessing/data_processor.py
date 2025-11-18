@@ -128,6 +128,14 @@ class DataProcessor:
             .get_df()
         )
 
+        # Remove rows with missing target values
+        if self.target_col in cleaned.columns:
+            rows_before = len(cleaned)
+            cleaned = cleaned[cleaned[self.target_col].notna()]
+            rows_removed = rows_before - len(cleaned)
+            if rows_removed > 0:
+                print(f"Removed {rows_removed} rows with missing target '{self.target_col}'")
+
         print(f"Cleaned shape: {cleaned.shape}")
         print("=" * 70)
 

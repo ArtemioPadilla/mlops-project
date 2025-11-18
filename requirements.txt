@@ -27,12 +27,12 @@ mkdocstrings-python==1.19.0         # Handler de Python para mkdocstrings
 # ===========================
 # Ciencia de datos y ML
 # ===========================
-numpy==2.3.5                        # Cálculo numérico
-pandas==2.3.3                       # Manipulación de datos en DataFrames
-scipy==1.16.3                       # Funciones científicas y estadísticas
-matplotlib==3.10.7                  # Gráficas básicas
+numpy==2.2.6                        # Cálculo numérico (Python 3.10 compatible)
+pandas==2.2.3                       # Manipulación de datos en DataFrames (Python 3.10 compatible)
+scipy==1.14.1                       # Funciones científicas y estadísticas (Python 3.10 compatible)
+matplotlib==3.9.2                   # Gráficas básicas (Python 3.10 compatible)
 seaborn==0.13.2                     # Gráficas estadísticas más elaboradas
-scikit-learn==1.7.2                 # Machine Learning tradicional
+scikit-learn==1.5.2                 # Machine Learning tradicional (Python 3.10 compatible)
 
 # ===========================
 # MLOps y control de experimentos

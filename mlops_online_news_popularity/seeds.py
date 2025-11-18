@@ -1,9 +1,11 @@
 import os
 import random
+
 import numpy as np
 
 # Semilla global
 SEED = int(os.getenv("RP_SEED", "42"))
+
 
 def set_global_seed(seed: int = SEED) -> int:
     """

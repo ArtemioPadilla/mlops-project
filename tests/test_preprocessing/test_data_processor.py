@@ -4,7 +4,7 @@ from mlops_online_news_popularity.preprocessing.data_processor import DataProces
 def test_load_and_clean_removes_nan_target(tmp_path):
     fake_csv = tmp_path / "fake.csv"
     fake_data = pd.DataFrame({
-        "url": ["a", "b", "c"],
+        "url": ["http://example.com/a", "http://example.com/b", "http://example.com/c"],
         "timedelta": [1, 2, 3],
         "LDA_00": [0.1, 0.2, 0.3],
         "LDA_01": [0.1, 0.2, 0.3],

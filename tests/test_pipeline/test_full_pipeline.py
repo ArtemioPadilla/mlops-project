@@ -5,17 +5,22 @@ import pandas as pd
 import os
 
 def test_full_pipeline_e2e(tmp_path):
-    # 1) Crear dataset simple
+    # 1) Crear dataset simple con URLs válidas
     csv = tmp_path / "data.csv"
     df = pd.DataFrame({
-        "url": ["a","b","c","d"],
-        "timedelta":[1,2,3,4],
-        "LDA_00":[0.1]*4,
-        "LDA_01":[0.2]*4,
-        "LDA_02":[0.3]*4,
-        "LDA_03":[0.4]*4,
-        "LDA_04":[0.5]*4,
-        "shares":[100,120,130,90]
+        "url": [
+            "http://example.com/a",
+            "http://example.com/b",
+            "http://example.com/c",
+            "http://example.com/d"
+        ],
+        "timedelta": [1, 2, 3, 4],
+        "LDA_00": [0.1] * 4,
+        "LDA_01": [0.2] * 4,
+        "LDA_02": [0.3] * 4,
+        "LDA_03": [0.4] * 4,
+        "LDA_04": [0.5] * 4,
+        "shares": [100, 120, 130, 90]
     })
     df.to_csv(csv, index=False)
 

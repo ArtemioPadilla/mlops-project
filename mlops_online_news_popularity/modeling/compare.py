@@ -8,9 +8,7 @@ using MLflow for experiment tracking and model comparison.
 from datetime import datetime
 import importlib
 import inspect
-from pathlib import Path
 from typing import Any, Dict
-from mlops_online_news_popularity.seeds import set_global_seed, SEED
 
 import joblib
 from loguru import logger
@@ -21,6 +19,7 @@ import yaml
 from mlops_online_news_popularity.config import MODELS_DIR
 from mlops_online_news_popularity.modeling.train import ModelTrainer
 from mlops_online_news_popularity.preprocessing import DataProcessor
+from mlops_online_news_popularity.seeds import SEED, set_global_seed
 
 # =============================================================================
 # Requirements and Usage Instructions
@@ -259,9 +258,7 @@ class Experimento:
 
                         # Creating ModelTrainer object to train and evaluate models
                         trainer = ModelTrainer(
-                            data_processor=self.data,
-                            estimator=estimator,
-                            model_name=model_name
+                            data_processor=self.data, estimator=estimator, model_name=model_name
                         )
 
                         # Transform target if needed (log transformation for skewed data)

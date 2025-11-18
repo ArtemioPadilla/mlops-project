@@ -6,13 +6,12 @@ Provides REST API endpoints for single and batch predictions.
 
 import io
 import traceback
-from typing import List
 
-import pandas as pd
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from loguru import logger
+import pandas as pd
 
 from mlops_online_news_popularity.serving import config, schemas
 from mlops_online_news_popularity.serving.model_handler import get_model_handler
@@ -296,7 +295,7 @@ async def predict_batch_csv(file: UploadFile = File(...)):
         if len(contents) > max_size:
             raise HTTPException(
                 status_code=400,
-                detail=f"File too large. Maximum size is {max_size / (1024*1024):.0f}MB",
+                detail=f"File too large. Maximum size is {max_size / (1024 * 1024):.0f}MB",
             )
 
         # Parse CSV
@@ -339,9 +338,7 @@ async def predict_batch_csv(file: UploadFile = File(...)):
     except Exception as e:
         logger.error(f"CSV batch prediction failed: {e}")
         logger.error(traceback.format_exc())
-        raise HTTPException(
-            status_code=500, detail=f"CSV batch prediction failed: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"CSV batch prediction failed: {str(e)}")
 
 
 # Custom exception handler
