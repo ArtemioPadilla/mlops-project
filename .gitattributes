@@ -1,0 +1,69 @@
+# Git attributes for consistent line endings and file handling
+# Ensures reproducible behavior across Windows, macOS, and Linux
+
+# Auto-detect text files and normalize line endings to LF on commit
+* text=auto
+
+# Source code - always use LF
+*.py text eol=lf
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Configuration files - always use LF
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.ini text eol=lf
+*.cfg text eol=lf
+*.conf text eol=lf
+*.json text eol=lf
+
+# Documentation - always use LF
+*.md text eol=lf
+*.txt text eol=lf
+*.rst text eol=lf
+
+# Data files - treat as binary (don't normalize)
+*.csv binary
+*.pkl binary
+*.joblib binary
+*.h5 binary
+*.hdf5 binary
+*.parquet binary
+
+# Model files - treat as binary
+*.pth binary
+*.pt binary
+*.onnx binary
+*.pb binary
+
+# Jupyter notebooks - treat as text but don't diff
+*.ipynb text eol=lf diff=jupyternotebook merge=jupyternotebook
+
+# Docker files - always use LF
+Dockerfile text eol=lf
+*.dockerfile text eol=lf
+docker-compose*.yml text eol=lf
+.dockerignore text eol=lf
+
+# Git files
+.gitignore text eol=lf
+.gitattributes text eol=lf
+.gitmodules text eol=lf
+
+# GitHub
+.github/**/*.yml text eol=lf
+.github/**/*.yaml text eol=lf
+.github/**/*.md text eol=lf
+
+# Denote binary files explicitly
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.zip binary
+*.tar.gz binary
+*.db binary
+*.sqlite binary
+*.sqlite3 binary

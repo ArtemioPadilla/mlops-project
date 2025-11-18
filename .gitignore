@@ -102,7 +102,9 @@ mlflow_artifacts/dev/artifacts/
 # 📊 DVC
 # Ignorar datasets, pero mantener los .dvc
 # =========================
-data
+/data/*
+!/data/sample/
+/data/sample/*.dvc
 # DVC config with credentials should not be versioned (use .dvc/config.example as template)
 .dvc/config
 .dvc/config.local

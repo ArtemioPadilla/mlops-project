@@ -8,8 +8,6 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, validator
 
-from mlops_online_news_popularity.serving import config
-
 
 class NewsArticleFeatures(BaseModel):
     """
@@ -30,12 +28,16 @@ class NewsArticleFeatures(BaseModel):
     num_self_hrefs: float = Field(..., description="Number of links to other Mashable articles")
     num_imgs: float = Field(..., description="Number of images")
     num_videos: float = Field(..., description="Number of videos")
-    average_token_length: float = Field(..., description="Average length of the words in the content")
+    average_token_length: float = Field(
+        ..., description="Average length of the words in the content"
+    )
     num_keywords: float = Field(..., description="Number of keywords in the metadata")
 
     # Channel features (binary flags)
     data_channel_is_lifestyle: float = Field(..., description="Is data channel 'Lifestyle'?")
-    data_channel_is_entertainment: float = Field(..., description="Is data channel 'Entertainment'?")
+    data_channel_is_entertainment: float = Field(
+        ..., description="Is data channel 'Entertainment'?"
+    )
     data_channel_is_bus: float = Field(..., description="Is data channel 'Business'?")
     data_channel_is_socmed: float = Field(..., description="Is data channel 'Social Media'?")
     data_channel_is_tech: float = Field(..., description="Is data channel 'Tech'?")
@@ -55,7 +57,9 @@ class NewsArticleFeatures(BaseModel):
     # Self-reference features
     self_reference_min_shares: float = Field(..., description="Min. shares of referenced articles")
     self_reference_max_shares: float = Field(..., description="Max. shares of referenced articles")
-    self_reference_avg_sharess: float = Field(..., description="Avg. shares of referenced articles")
+    self_reference_avg_sharess: float = Field(
+        ..., description="Avg. shares of referenced articles"
+    )
 
     # Time features
     weekday_is_monday: float = Field(..., description="Was the article published on Monday?")
@@ -77,8 +81,12 @@ class NewsArticleFeatures(BaseModel):
     # Sentiment and polarity features
     global_subjectivity: float = Field(..., description="Text subjectivity")
     global_sentiment_polarity: float = Field(..., description="Text sentiment polarity")
-    global_rate_positive_words: float = Field(..., description="Rate of positive words in the content")
-    global_rate_negative_words: float = Field(..., description="Rate of negative words in the content")
+    global_rate_positive_words: float = Field(
+        ..., description="Rate of positive words in the content"
+    )
+    global_rate_negative_words: float = Field(
+        ..., description="Rate of negative words in the content"
+    )
     rate_positive_words: float = Field(
         ..., description="Rate of positive words among non-neutral tokens"
     )
@@ -171,9 +179,7 @@ class PredictionResponse(BaseModel):
     """Response model for single prediction."""
 
     predicted_shares: int = Field(..., description="Predicted number of shares")
-    log_prediction: float = Field(
-        ..., description="Log-transformed prediction (model output)"
-    )
+    log_prediction: float = Field(..., description="Log-transformed prediction (model output)")
 
     class Config:
         schema_extra = {
@@ -205,9 +211,7 @@ class BatchPredictionRequest(BaseModel):
 class BatchPredictionResponse(BaseModel):
     """Response model for batch predictions."""
 
-    predictions: List[PredictionResponse] = Field(
-        ..., description="List of predictions"
-    )
+    predictions: List[PredictionResponse] = Field(..., description="List of predictions")
     count: int = Field(..., description="Number of predictions")
 
     class Config:

@@ -1,0 +1,201 @@
+name: Reproducibility Test
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+on:
+  # Manual trigger from GitHub UI
+  workflow_dispatch:
+    inputs:
+      model:
+        description: 'Model to test (ridge, randomforest, xgboost, all)'
+        required: false
+        default: 'ridge'
+        type: choice
+        options:
+          - ridge
+          - randomforest
+          - xgboost
+          - all
+
+  # Pull requests to main branch
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'mlops_online_news_popularity/**'
+      - 'requirements.txt'
+      - 'pyproject.toml'
+      - 'scripts/test_reproducibility.sh'
+      - 'Makefile'
+
+  # Releases and version tags
+  push:
+    tags:
+      - 'v*'
+
+  # Weekly schedule - Mondays at 9 AM UTC (optional, uncomment to enable)
+  # schedule:
+  #   - cron: '0 9 * * 1'
+
+  # Uncomment to run on every push to main (not recommended - adds 10-15 min to every merge)
+  # push:
+  #   branches:
+  #     - main
+
+jobs:
+  test-reproducibility:
+    name: Test ML Pipeline Reproducibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install package in editable mode
+        run: |
+          pip install -e .
+
+      - name: Verify Python version
+        run: |
+          make check-python
+
+      - name: Verify sample dataset exists
+        run: |
+          if [ ! -f "data/sample/online_news_sample.csv" ]; then
+            echo "❌ Sample dataset not found!"
+            echo "Expected: data/sample/online_news_sample.csv"
+            exit 1
+          fi
+          echo "✅ Sample dataset found ($(wc -l < data/sample/online_news_sample.csv) rows)"
+
+      - name: Run reproducibility test
+        run: |
+          make test-reproducibility
+        env:
+          PYTHONHASHSEED: 42
+          REPRO_DATA_PATH: data/sample/online_news_sample.csv
+
+      - name: Generate test summary
+        if: always()
+        run: |
+          echo "## Reproducibility Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Dataset:** Sample data (2,000 rows from full dataset)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ job.status }}" == "success" ]]; then
+            echo "✅ **PASSED** - ML pipeline produces identical results across runs" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Validated:**" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Data splits are identical" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Model metrics are identical (RMSE, MAE, R²)" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Model predictions are identical" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "_Note: CI uses sample data. Run \`make test-reproducibility\` locally to test with full dataset._" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **FAILED** - ML pipeline does NOT produce consistent results" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Action required:** Check logs above for details" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload test artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reproducibility-test-artifacts
+          path: |
+            .reproducibility_test/
+            data/processed/metadata.json
+          retention-days: 7
+          if-no-files-found: warn
+
+  test-reproducibility-summary:
+    name: Reproducibility Test Summary
+    needs: test-reproducibility
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Check test results
+        run: |
+          echo "## Final Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [[ "${{ needs.test-reproducibility.result }}" == "success" ]]; then
+            echo "✅ **Reproducibility test PASSED**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "The ML pipeline is deterministic and produces identical results across runs." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Implications:**" >> $GITHUB_STEP_SUMMARY
+            echo "- Models can be reproduced in any environment" >> $GITHUB_STEP_SUMMARY
+            echo "- Results are auditable and traceable" >> $GITHUB_STEP_SUMMARY
+            echo "- Safe to deploy to production" >> $GITHUB_STEP_SUMMARY
+          elif [[ "${{ needs.test-reproducibility.result }}" == "failure" ]]; then
+            echo "❌ **Reproducibility test FAILED**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "The ML pipeline does NOT produce consistent results." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Common causes:**" >> $GITHUB_STEP_SUMMARY
+            echo "1. Random seeds not set correctly (\`random_state=42\`)" >> $GITHUB_STEP_SUMMARY
+            echo "2. Dependency version changes (check \`requirements.txt\`)" >> $GITHUB_STEP_SUMMARY
+            echo "3. Non-deterministic operations in code" >> $GITHUB_STEP_SUMMARY
+            echo "4. External data sources changed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Action required:**" >> $GITHUB_STEP_SUMMARY
+            echo "- Review test logs in the job above" >> $GITHUB_STEP_SUMMARY
+            echo "- Check [docs/reproducibility.md](docs/reproducibility.md) for troubleshooting" >> $GITHUB_STEP_SUMMARY
+            echo "- Run \`make test-reproducibility\` locally to debug" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          else
+            echo "⚠️ **Reproducibility test was CANCELLED or SKIPPED**" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+      - name: Comment on PR (if applicable)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const result = '${{ needs.test-reproducibility.result }}';
+            const icon = result === 'success' ? '✅' : '❌';
+            const status = result === 'success' ? 'PASSED' : 'FAILED';
+
+            const comment = `## ${icon} Reproducibility Test ${status}
+
+            ${result === 'success'
+              ? 'The ML pipeline produces **identical results** across runs. Safe to merge! 🎉'
+              : 'The ML pipeline does **NOT** produce consistent results. Please review the logs and fix before merging.'}
+
+            <details>
+            <summary>Details</summary>
+
+            - **Python Version:** 3.10
+            - **Dataset:** Sample data (2,000 rows)
+            - **Test Duration:** ~5-10 minutes
+            - **Validation:** Data splits, metrics, and predictions
+
+            _Note: CI uses sample dataset for testing. Run \`make test-reproducibility\` locally to validate with full dataset (~40k rows)._
+
+            [View full workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            </details>`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

@@ -220,24 +220,38 @@ docker-compose up -d --build
 
 ### Docker Hub
 
-```bash
-# 1. Tag the image
-docker tag ml-service:latest your-username/ml-service:latest
-docker tag ml-service:latest your-username/ml-service:v1.0.0
+The project's official image is published at: [`artemiop/mlops-news-predictor`](https://hub.docker.com/r/artemiop/mlops-news-predictor)
 
-# 2. Login to Docker Hub
+#### Pull and Run from Docker Hub
+
+```bash
+# Pull latest version
+docker pull artemiop/mlops-news-predictor:latest
+
+# Run from Docker Hub
+docker run -p 8000:8000 \
+  -v $(pwd)/models:/app/models:ro \
+  -v $(pwd)/mlflow_artifacts:/app/mlflow_artifacts:ro \
+  artemiop/mlops-news-predictor:latest
+```
+
+#### Publishing Your Own Images
+
+```bash
+# 1. Login to Docker Hub
 docker login
 
-# 3. Push images
-docker push your-username/ml-service:latest
-docker push your-username/ml-service:v1.0.0
+# 2. Tag the image
+docker tag ml-service:latest artemiop/mlops-news-predictor:latest
+docker tag ml-service:latest artemiop/mlops-news-predictor:v1.0.0
 
-# 4. Pull and run from registry
-docker pull your-username/ml-service:latest
-docker run -p 8000:8000 \
-  -v $(pwd)/models:/app/models \
-  your-username/ml-service:latest
+# 3. Push images
+docker push artemiop/mlops-news-predictor:latest
+docker push artemiop/mlops-news-predictor:v1.0.0
 ```
+
+For detailed instructions on Docker Hub publishing, version management, and CI/CD integration, see:
+**[Docker Hub Publishing Guide](../deployment/dockerhub.md)**
 
 ### Private Registry
 

@@ -5,15 +5,15 @@ Implements the handler pattern with initialize, preprocess, inference,
 and postprocess methods similar to AWS SageMaker handlers.
 """
 
-import time
 from pathlib import Path
+import time
 from typing import Any, Dict, List, Optional, Union
 
 import joblib
+from loguru import logger
 import mlflow
 import numpy as np
 import pandas as pd
-from loguru import logger
 
 from mlops_online_news_popularity.serving import config
 
@@ -51,13 +51,9 @@ class ModelHandler:
             if context
             else config.MODEL_LOAD_STRATEGY
         )
-        model_path = (
-            context.get("model_path", config.MODEL_PATH) if context else config.MODEL_PATH
-        )
+        model_path = context.get("model_path", config.MODEL_PATH) if context else config.MODEL_PATH
         mlflow_run_id = (
-            context.get("mlflow_run_id", config.MLFLOW_RUN_ID)
-            if context
-            else config.MLFLOW_RUN_ID
+            context.get("mlflow_run_id", config.MLFLOW_RUN_ID) if context else config.MLFLOW_RUN_ID
         )
 
         try:
@@ -94,9 +90,7 @@ class ModelHandler:
             "model_size_mb": path.stat().st_size / (1024 * 1024),
         }
 
-        logger.info(
-            f"Model loaded from local file in {(time.time() - start) * 1000:.2f} ms"
-        )
+        logger.info(f"Model loaded from local file in {(time.time() - start) * 1000:.2f} ms")
 
     def _load_from_mlflow(self, run_id: Optional[str] = None):
         """Load model from MLflow."""
@@ -107,9 +101,7 @@ class ModelHandler:
         mlflow.set_tracking_uri(config.MLFLOW_TRACKING_URI)
 
         if not run_id:
-            raise ValueError(
-                "MLFLOW_RUN_ID must be provided when using mlflow load strategy"
-            )
+            raise ValueError("MLFLOW_RUN_ID must be provided when using mlflow load strategy")
 
         # Load model from MLflow
         model_uri = f"runs:/{run_id}/model_pipeline"
@@ -237,9 +229,7 @@ class ModelHandler:
         logger.debug(f"Postprocessing took {(time.time() - start) * 1000:.2f} ms")
         return results
 
-    def handle(
-        self, input_data: Union[pd.DataFrame, Dict, List[Dict]]
-    ) -> List[Dict[str, float]]:
+    def handle(self, input_data: Union[pd.DataFrame, Dict, List[Dict]]) -> List[Dict[str, float]]:
         """
         Handle complete inference pipeline: preprocess -> inference -> postprocess.
 

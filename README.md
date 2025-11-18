@@ -3,6 +3,24 @@
 <a target="_blank" href="https://cookiecutter-data-science.drivendata.org/">
     <img src="https://img.shields.io/badge/CCDS-Project%20template-328F97?logo=cookiecutter" />
 </a>
+<a target="_blank" href="https://github.com/ArtemioPadilla/mlops-project/actions/workflows/ci.yml">
+    <img src="https://github.com/ArtemioPadilla/mlops-project/actions/workflows/ci.yml/badge.svg" alt="CI" />
+</a>
+<a target="_blank" href="https://github.com/ArtemioPadilla/mlops-project/actions/workflows/reproducibility.yml">
+    <img src="https://github.com/ArtemioPadilla/mlops-project/actions/workflows/reproducibility.yml/badge.svg" alt="Reproducibility" />
+</a>
+<a target="_blank" href="https://codecov.io/gh/ArtemioPadilla/mlops-project">
+    <img src="https://codecov.io/gh/ArtemioPadilla/mlops-project/branch/main/graph/badge.svg" alt="Coverage" />
+</a>
+<a target="_blank" href="https://www.python.org/">
+    <img src="https://img.shields.io/badge/python-3.10-blue?logo=python&logoColor=white" alt="Python 3.10" />
+</a>
+<a target="_blank" href="https://hub.docker.com/r/artemiop/mlops-news-predictor">
+    <img src="https://img.shields.io/docker/pulls/artemiop/mlops-news-predictor?logo=docker" alt="Docker Pulls" />
+</a>
+<a target="_blank" href="https://hub.docker.com/r/artemiop/mlops-news-predictor">
+    <img src="https://img.shields.io/docker/image-size/artemiop/mlops-news-predictor/latest?logo=docker" alt="Docker Image Size" />
+</a>
 
 A complete MLOps pipeline for predicting the popularity (shares) of online news articles using machine learning. Built with scikit-learn, MLflow, and DVC following best practices for reproducible ML.
 
@@ -84,6 +102,19 @@ make mlflow-ui   # Open http://localhost:5001
 | `make docker-up` | Start services with docker-compose |
 | `make docker-down` | Stop docker-compose services |
 | `make docker-logs` | View docker-compose logs |
+| `make docker-tag` | Tag image for DockerHub |
+| `make docker-push` | Push image to DockerHub |
+| `make docker-release` | Build, tag, and push to DockerHub |
+
+### Reproducibility Testing
+
+| Command | Description |
+|---------|-------------|
+| `make check-python` | Verify Python 3.10 is active |
+| `make test-reproducibility` | Full reproducibility test (requires Python 3.10) |
+| `make test-reproducibility-dev` | Dev mode test (allows any Python 3.x) |
+| `make test-reproducibility-docker` | Test using Docker (guaranteed Python 3.10) |
+| `make test-reproducibility-quick` | Quick test (metrics comparison only) |
 
 ### Documentation & Development
 
@@ -286,19 +317,36 @@ Update `MODEL_PATH` or `MLFLOW_RUN_ID` in `.env` to use a different model.
 
 ### Publishing to Docker Registry
 
+The project's Docker image is available on Docker Hub: **[artemiop/mlops-news-predictor](https://hub.docker.com/r/artemiop/mlops-news-predictor)**
+
+#### Quick Start from Docker Hub
+
 ```bash
-# Tag image for registry
-docker tag ml-service:latest your-dockerhub-username/ml-service:latest
-docker tag ml-service:latest your-dockerhub-username/ml-service:v1.0.0
+# Pull and run from Docker Hub
+docker pull artemiop/mlops-news-predictor:latest
+docker run -p 8000:8000 \
+  -v $(pwd)/models:/app/models:ro \
+  artemiop/mlops-news-predictor:latest
 
-# Push to Docker Hub
-docker push your-dockerhub-username/ml-service:latest
-docker push your-dockerhub-username/ml-service:v1.0.0
-
-# Pull and run from registry
-docker pull your-dockerhub-username/ml-service:latest
-docker run -p 8000:8000 -v $(pwd)/models:/app/models your-dockerhub-username/ml-service:latest
+# Access API at http://localhost:8000/docs
 ```
+
+#### Publishing Your Own Images
+
+```bash
+# 1. Login to Docker Hub
+docker login
+
+# 2. Tag image for your registry
+docker tag ml-service:latest artemiop/mlops-news-predictor:latest
+docker tag ml-service:latest artemiop/mlops-news-predictor:v1.0.0
+
+# 3. Push to Docker Hub
+docker push artemiop/mlops-news-predictor:latest
+docker push artemiop/mlops-news-predictor:v1.0.0
+```
+
+For detailed instructions on publishing to Docker Hub, CI/CD integration, and version management, see **[docs/deployment/dockerhub.md](docs/deployment/dockerhub.md)**.
 
 ## DVC Data Versioning
 
@@ -314,6 +362,91 @@ git add data/raw/dataset.csv.dvc
 ```
 
 See `.dvc/config` for remote storage configuration.
+
+## Reproducibility
+
+This project ensures **100% reproducible results** across different environments through multiple mechanisms:
+
+### Reproducibility Guarantees
+
+- ✅ **Python 3.10**: Specified in `.python-version` and `pyproject.toml`
+- ✅ **Pinned Dependencies**: All 62+ packages use exact versions (`==`) in `requirements.txt`
+- ✅ **Random Seeds**: `random_state=42` throughout the codebase
+- ✅ **DVC**: Data versioning and tracking
+- ✅ **MLflow**: Experiment tracking and model registry
+
+### Quick Validation
+
+Test reproducibility using Makefile targets:
+
+```bash
+# Recommended: Strict test (requires Python 3.10)
+make test-reproducibility
+
+# Alternative: Dev mode (allows Python 3.14, results may differ)
+make test-reproducibility-dev
+
+# Alternative: Using Docker (guaranteed Python 3.10, no local setup needed)
+make test-reproducibility-docker
+
+# Alternative: Quick test (only compares metrics, faster)
+make test-reproducibility-quick
+
+# Check if you have Python 3.10 active
+make check-python
+```
+
+Expected output (strict mode):
+```
+✅ Data splits match (27750/5947/5947)
+✅ Metrics identical
+✅ Model predictions identical
+✅ REPRODUCIBILITY TEST PASSED
+```
+
+### Which Test to Use?
+
+| Situation | Command | Why |
+|-----------|---------|-----|
+| **CI/CD pipeline** | `make test-reproducibility` | Guarantees Python 3.10, fails if version mismatch |
+| **Official validation** | `make test-reproducibility` | Strict mode, production-ready |
+| **Local dev (Python 3.14+)** | `make test-reproducibility-dev` | Allows any Python 3.x, faster iteration |
+| **No Python 3.10 installed** | `make test-reproducibility-docker` | Uses Docker, guaranteed environment |
+| **Quick sanity check** | `make test-reproducibility-quick` | Only compares metrics, ~2x faster |
+| **Check Python version** | `make check-python` | Verify you have Python 3.10 active |
+
+### Manual Validation (Clean Environment)
+
+```bash
+# 1. Create fresh environment
+python3.10 -m venv venv_clean
+source venv_clean/bin/activate  # Windows: venv_clean\Scripts\activate
+
+# 2. Install exact dependencies
+pip install -r requirements.txt
+pip install -e .
+
+# 3. Run pipeline
+make preprocess
+make train-single
+
+# 4. Verify metrics
+# Expected: RMSE ~1.05, R² ~0.79
+```
+
+### Expected Results
+
+| Metric | Ridge (Expected) | RandomForest (Expected) |
+|--------|------------------|-------------------------|
+| **Train RMSE** | 1.02 - 1.05 | 0.45 - 0.55 |
+| **Val RMSE** | 1.05 - 1.08 | 0.95 - 1.05 |
+| **Test RMSE** | 1.05 - 1.08 | 0.95 - 1.05 |
+| **Train R²** | 0.79 - 0.82 | 0.92 - 0.95 |
+| **Val R²** | 0.77 - 0.80 | 0.78 - 0.82 |
+
+**Note**: Exact values will be identical across runs due to fixed random seeds.
+
+For detailed troubleshooting and validation procedures, see **[docs/reproducibility.md](docs/reproducibility.md)**.
 
 ## Project Organization
 

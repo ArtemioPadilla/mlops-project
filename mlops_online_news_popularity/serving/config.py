@@ -20,20 +20,14 @@ MLFLOW_ARTIFACTS_DIR = PROJ_ROOT / "mlflow_artifacts"
 
 # Model configuration
 MODEL_NAME = os.getenv("MODEL_NAME", "RandomForestBase")
-MODEL_LOAD_STRATEGY: Literal["local", "mlflow"] = os.getenv(
-    "MODEL_LOAD_STRATEGY", "local"
-)
+MODEL_LOAD_STRATEGY: Literal["local", "mlflow"] = os.getenv("MODEL_LOAD_STRATEGY", "local")
 
 # Local model path (default to latest RandomForest)
-MODEL_PATH = os.getenv(
-    "MODEL_PATH",
-    str(MODELS_DIR / "randomforestbase_best_20251102_165526.pkl")
-)
+MODEL_PATH = os.getenv("MODEL_PATH", str(MODELS_DIR / "randomforestbase_best_20251102_165526.pkl"))
 
 # MLflow configuration
 MLFLOW_TRACKING_URI = os.getenv(
-    "MLFLOW_TRACKING_URI",
-    f"sqlite:///{MLFLOW_ARTIFACTS_DIR}/dev/mlflow.db"
+    "MLFLOW_TRACKING_URI", f"sqlite:///{MLFLOW_ARTIFACTS_DIR}/dev/mlflow.db"
 )
 MLFLOW_RUN_ID: Optional[str] = os.getenv("MLFLOW_RUN_ID", None)
 MLFLOW_MODEL_NAME: Optional[str] = os.getenv("MLFLOW_MODEL_NAME", None)

@@ -26,6 +26,7 @@ import typer
 
 from mlops_online_news_popularity.config import MODELS_DIR, PROCESSED_DATA_DIR
 from mlops_online_news_popularity.preprocessing import DataProcessor
+from mlops_online_news_popularity.preprocessing.utils import classify_numeric_columns
 
 app = typer.Typer()
 
@@ -456,6 +457,114 @@ class ModelTrainer:
                     print(f"{key:12s} | mean: {m['mean']:.4f} | std: {m['std']:.4f}")
 
         print("=" * 70)
+
+
+# =========================================================
+# Functional API (Convenience Wrapper)
+# =========================================================
+
+
+def train_model(
+    X_train: pd.DataFrame,
+    y_train: pd.Series,
+    X_val: Optional[pd.DataFrame] = None,
+    y_val: Optional[pd.Series] = None,
+    X_test: Optional[pd.DataFrame] = None,
+    y_test: Optional[pd.Series] = None,
+    estimator: Optional[BaseEstimator] = None,
+    apply_log_transform: bool = True,
+) -> Pipeline:
+    """
+    Functional wrapper for quick model training.
+
+    This is a convenience function for simple use cases and testing.
+    For full control and advanced features, use the ModelTrainer class directly.
+
+    Parameters
+    ----------
+    X_train : pd.DataFrame
+        Training features
+    y_train : pd.Series
+        Training target
+    X_val : pd.DataFrame, optional
+        Validation features (if None, uses first row of X_train)
+    y_val : pd.Series, optional
+        Validation target (if None, uses first value of y_train)
+    X_test : pd.DataFrame, optional
+        Test features (if None, uses first row of X_train)
+    y_test : pd.Series, optional
+        Test target (if None, uses first value of y_train)
+    estimator : BaseEstimator, optional
+        Sklearn estimator to train (default: Ridge with random_state=42)
+    apply_log_transform : bool, optional
+        Apply log(1 + y) transformation to target (default: True)
+
+    Returns
+    -------
+    Pipeline
+        Trained sklearn pipeline (preprocessing + model)
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> from sklearn.ensemble import RandomForestRegressor
+    >>> X = pd.DataFrame({'a': [1, 2, 3, 4], 'b': [5, 6, 7, 8]})
+    >>> y = pd.Series([10, 20, 30, 40])
+    >>> model = train_model(X, y, estimator=RandomForestRegressor(n_estimators=10))
+    >>> predictions = model.predict(X)
+    >>> len(predictions) == len(y)
+    True
+
+    Notes
+    -----
+    This function creates a minimal DataProcessor-compatible object internally
+    and delegates to ModelTrainer for the actual training.
+    """
+    from sklearn.linear_model import Ridge
+
+    # Create minimal DataProcessor-like object for ModelTrainer compatibility
+    class MinimalDataProcessor:
+        """Minimal data processor wrapper for functional API."""
+
+        def __init__(
+            self,
+            X_train: pd.DataFrame,
+            y_train: pd.Series,
+            X_val: Optional[pd.DataFrame],
+            y_val: Optional[pd.Series],
+            X_test: Optional[pd.DataFrame],
+            y_test: Optional[pd.Series],
+        ):
+            self.X_train = X_train
+            self.y_train = y_train
+
+            # Use dummy data if validation/test sets not provided
+            self.X_val = X_val if X_val is not None else X_train.head(1).copy()
+            self.y_val = y_val if y_val is not None else y_train.head(1).copy()
+            self.X_test = X_test if X_test is not None else X_train.head(1).copy()
+            self.y_test = y_test if y_test is not None else y_train.head(1).copy()
+
+            # Classify columns as binary vs non-binary
+            binary_cols, non_binary_cols = classify_numeric_columns(X_train)
+            self.cols_bin = binary_cols
+            self.cols_no_bin = non_binary_cols
+
+    # Use Ridge as default estimator
+    if estimator is None:
+        estimator = Ridge(random_state=42)
+
+    # Create minimal data processor
+    data_processor = MinimalDataProcessor(X_train, y_train, X_val, y_val, X_test, y_test)
+
+    # Train using ModelTrainer
+    trainer = ModelTrainer(data_processor=data_processor, estimator=estimator)
+
+    if apply_log_transform:
+        trainer.transform_target(apply_log=True)
+
+    trainer.train_model()
+
+    return trainer.pipeline
 
 
 # =========================================================
