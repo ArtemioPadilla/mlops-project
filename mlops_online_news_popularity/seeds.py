@@ -15,8 +15,9 @@ def set_global_seed(seed: int = SEED) -> int:
     random.seed(seed)
     os.environ["PYTHONHASHSEED"] = str(seed)
 
-    # NumPy
-    np.random.default_rng(seed)
+    # NumPy - set both legacy and new API for maximum compatibility
+    np.random.seed(seed)  # Legacy API (still widely used)
+    # Note: np.random.default_rng(seed) creates a new generator but doesn't set global state
 
     # Reducir no-determinismo de BLAS (OpenBLAS, MKL, etc.)
     os.environ["OPENBLAS_NUM_THREADS"] = "1"
