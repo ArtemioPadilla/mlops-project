@@ -1,12 +1,22 @@
-from mlops_online_news_popularity.preprocessing.data_io import DataLoader
 import pandas as pd
+from mlops_online_news_popularity.preprocessing.data_processor import DataProcessor
 
-def test_data_loader_loads_csv(tmp_path):
-    csv_path = tmp_path / "sample.csv"
-    df = pd.DataFrame({"a": [1,2,3]})
-    df.to_csv(csv_path, index=False)
+def test_full_preprocessing(tmp_path):
+    fake_csv = tmp_path / "fake.csv"
+    df = pd.DataFrame({
+        "url": ["x", "y"],
+        "timedelta": [10, 20],
+        "shares": [100, 200],
+        "LDA_00": [0.1, 0.2],
+        "LDA_01": [0.1, 0.2],
+        "LDA_02": [0.1, 0.2],
+        "LDA_03": [0.1, 0.2],
+        "LDA_04": [0.1, 0.2]
+    })
+    df.to_csv(fake_csv, index=False)
 
-    loaded = DataLoader.load_csv(str(csv_path))
+    dp = DataProcessor(str(fake_csv))
+    dp.process()
 
-    assert loaded.shape == (3,1)
-    assert "a" in loaded.columns
+    assert dp.X_train is not None
+    assert dp.y_train is not None

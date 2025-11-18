@@ -30,14 +30,38 @@ def load_model(model_path: str):
 
 
 
-def predict(model, X: pd.DataFrame):
+def predict(model, X):
     """
-    Minimal predict function required by pytest.
-    Runs model.predict() and returns a Python list.
+    Run prediction ensuring feature alignment with training columns
+    and ALWAYS return a Python list (as required by tests).
     """
     logger.info("Running prediction...")
+
+    # Ensure X is a DataFrame
+    if not isinstance(X, pd.DataFrame):
+        X = pd.DataFrame(X)
+
+    # Ensure model has training column names
+    if hasattr(model, "feature_names_in_"):
+        train_cols = list(model.feature_names_in_)
+    else:
+        raise ValueError("Model does not contain feature_names_in_")
+
+    # Add missing columns (fill with 0)
+    for col in train_cols:
+        if col not in X:
+            X[col] = 0
+
+    # Drop extra columns not seen during training
+    X = X[train_cols]
+
+    # Run prediction
     preds = model.predict(X)
+
+    # Convert numpy array → list (tests expect list)
     return preds.tolist()
+
+
 
 
 # ============================================================

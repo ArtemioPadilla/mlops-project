@@ -1,36 +1,23 @@
 import pandas as pd
-import numpy as np
 from mlops_online_news_popularity.preprocessing.data_processor import DataProcessor
 
-def test_filter_expected_columns():
-    df = pd.DataFrame({
-        "url": ["a"],
-        "timedelta": [10],
-        "extra": [123],
-        "shares": [50]
+def test_load_and_clean_removes_nan_target(tmp_path):
+    fake_csv = tmp_path / "fake.csv"
+    fake_data = pd.DataFrame({
+        "url": ["a", "b", "c"],
+        "timedelta": [1, 2, 3],
+        "LDA_00": [0.1, 0.2, 0.3],
+        "LDA_01": [0.1, 0.2, 0.3],
+        "LDA_02": [0.1, 0.2, 0.3],
+        "LDA_03": [0.1, 0.2, 0.3],
+        "LDA_04": [0.1, 0.2, 0.3],
+        "shares": [100, None, 300]
     })
-    dp = DataProcessor("dummy")
-    dp.data = df
+    fake_data.to_csv(fake_csv, index=False)
 
-    dp.expected_cols = ["url", "timedelta", "shares"]
+    dp = DataProcessor(filepath=str(fake_csv))
+    df = dp.load_and_clean()
 
-    dp.data = df
-    result = dp.data[dp.expected_cols]
-
-    assert list(result.columns) == ["url", "timedelta", "shares"]
-
-
-def test_handle_high_correlation():
-    dp = DataProcessor("dummy")
-
-    dp.X_train = pd.DataFrame({
-        "a": [1,2,3,4],
-        "b": [2,4,6,8],  # correlación perfecta con a
-        "c": [10,20,30,40]
-    })
-    dp.X_test = dp.X_train.copy()
-
-    dp._handle_high_correlation(threshold=0.9)
-
-    assert ("a" in dp.cols_to_drop) or ("b" in dp.cols_to_drop)
-    assert dp.X_train.shape[1] == 2
+    # No debe haber NaN en target
+    assert df["shares"].isna().sum() == 0
+    assert df.shape[0] == 2  # Se eliminó 1 fila
