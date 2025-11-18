@@ -1,64 +1,61 @@
 # ===========================
 # Herramientas de formateo y estilo
 # ===========================
-black
-flake8
-isort
+black==25.11.0                      # Formateador automático de código
+flake8==7.3.0                       # Linter para detectar errores de estilo y sintaxis
+isort==7.0.0                        # Organizador de imports
 
 # ===========================
 # Utilidades y logging
 # ===========================
-loguru
-tqdm
-typer
-python-dotenv
+loguru==0.7.3                       # Logging simplificado y potente
+tqdm==4.67.1                        # Barras de progreso para loops
+typer==0.20.0                       # Creación de CLIs fáciles y elegantes
+python-dotenv==1.2.1                # Manejo de variables de entorno
 
 # ===========================
 # Gestión y documentación
 # ===========================
-mkdocs>=1.6.0
-mkdocs-material>=9.0.0
-pymdown-extensions>=10.0
-mkdocs-mermaid2-plugin>=1.1.0
-mkdocstrings[python]>=0.24.0
-mkdocstrings-python>=1.7.0
+pip==25.3                           # Instalador de paquetes
+mkdocs==1.6.1                       # Generador de documentación
+mkdocs-material==9.7.0              # Material theme para MkDocs
+pymdown-extensions==10.17.1         # Extensiones de Markdown
+mkdocs-mermaid2-plugin==1.2.3       # Soporte para diagramas Mermaid
+mkdocstrings[python]==0.30.1        # Auto-generación de API docs desde docstrings
+mkdocstrings-python==1.19.0         # Handler de Python para mkdocstrings
 
 # ===========================
 # Ciencia de datos y ML
 # ===========================
-numpy
-pandas
-scipy
-matplotlib
-seaborn
-scikit-learn
+numpy==2.3.5                        # Cálculo numérico
+pandas==2.3.3                       # Manipulación de datos en DataFrames
+scipy==1.16.3                       # Funciones científicas y estadísticas
+matplotlib==3.10.7                  # Gráficas básicas
+seaborn==0.13.2                     # Gráficas estadísticas más elaboradas
+scikit-learn==1.7.2                 # Machine Learning tradicional
 
 # ===========================
 # MLOps y control de experimentos
 # ===========================
-dvc==3.48.3
-dvc-data==3.14.1
-dvc-http==2.30.2
-dvc-s3==3.1.0
-dpath==2.1.6
-
-mlflow==2.13.1
-cookiecutter-data-science==2.3.0
-evidently==0.7.16
-deepchecks==0.19.1
-sdv==1.5.0
+dvc[s3]==3.64.0                     # Data Version Control
+mlflow==3.6.0                       # Seguimiento de experimentos y modelos
+cookiecutter-data-science==2.3.0    # Plantilla estándar de proyectos de DS
+evidently==0.7.16                   # Monitoreo de modelos
+deepchecks==0.19.1                  # Validaciones de calidad en ML
+sdv==1.29.0                         # Synthetic Data Vault (generación de datos sintéticos)
 
 # ===========================
 # APIs y despliegue
 # ===========================
-fastapi==0.111.0
-uvicorn[standard]==0.29.0
-python-multipart
+fastapi==0.121.2                    # Framework para crear APIs rápidas y eficientes
+uvicorn[standard]==0.38.0   # ASGI server para FastAPI (con dependencias completas)
+python-multipart==0.0.20    # Soporte para file uploads en FastAPI
 
 # ===========================
 # Testing
 # ===========================
-pytest==7.4.4
-pytest-cov==4.1.0
-pytest-asyncio==0.21.1
-    
+pytest==9.0.1                       # Testing unitario y de integración
+pytest-cov==7.0.0          # Cobertura de código para tests
+pytest-asyncio==1.3.0      # Soporte para tests async/await
+pytest-mock==3.15.1         # Utilidades de mocking para pytest
+httpx==0.28.1               # Cliente HTTP para testing de FastAPI (requerido por TestClient)

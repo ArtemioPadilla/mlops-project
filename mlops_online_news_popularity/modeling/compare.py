@@ -10,6 +10,7 @@ import importlib
 import inspect
 from pathlib import Path
 from typing import Any, Dict
+from mlops_online_news_popularity.seeds import set_global_seed, SEED
 
 import joblib
 from loguru import logger
@@ -72,7 +73,7 @@ class Experimento:
     Note: Scaling is handled automatically by ModelTrainer based on column types.
     """
 
-    def __init__(self, config_path: str, data_processor: DataProcessor):
+    def __init__(self, config_path: str, data_processor: DataProcessor, seed: int = SEED):
         """
         Initialize the experiment with configuration and data.
 
@@ -82,9 +83,12 @@ class Experimento:
             Path to the YAML configuration file
         data_processor : DataProcessor
             DataProcessor object containing train/val/test splits
+        seed : int
+            Global seed
         """
         self.config_path = config_path
         self.data = data_processor
+        self.seed = set_global_seed(seed)
 
         # Import the YAML configuration
         with open(config_path, "r") as f:
@@ -149,7 +153,7 @@ class Experimento:
             # MLOps: insert "random_state" to reproduce the model if the model supports it
             init_kwargs = {}
             if "random_state" in inspect.signature(EstimatorClass.__init__).parameters:
-                init_kwargs["random_state"] = 42
+                init_kwargs["random_state"] = self.seed
 
             return EstimatorClass(**init_kwargs)
         except Exception as e:
@@ -164,6 +168,7 @@ class Experimento:
         This creates a parent run in MLflow and nested child runs for each model.
         Each model is trained, evaluated, and logged to MLflow.
         """
+        set_global_seed(self.seed)
 
         # Create unique run name with timestamp
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -175,6 +180,7 @@ class Experimento:
             # Log configuration metadata
             mlflow.log_param("config_file", self.config_path)
             mlflow.log_param("experiment_name", self.experiment_name)
+            mlflow.log_param("seed_used", self.seed)
             mlflow.log_param("num_models", num_models)
             mlflow.log_param("models_trained", ",".join(self.models_config.keys()))
             mlflow.log_param("metric_to_optimize", self.config.get("metric_to_optimize"))
@@ -255,7 +261,7 @@ class Experimento:
                         trainer = ModelTrainer(
                             data_processor=self.data,
                             estimator=estimator,
-                            model_name=model_name,
+                            model_name=model_name
                         )
 
                         # Transform target if needed (log transformation for skewed data)
