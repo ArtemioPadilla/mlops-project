@@ -1,8 +1,8 @@
 """
 Pytest fixtures for serving module tests.
 
-Provides reusable test fixtures including mock models, sample data,
-and FastAPI test clients.
+Avoid importing FastAPI or config at module import time,
+because pytest will import this file BEFORE running tests.
 """
 
 import tempfile
@@ -14,7 +14,11 @@ import numpy as np
 import pytest
 from fastapi.testclient import TestClient
 
-from mlops_online_news_popularity.serving import config
+
+# 🚨 IMPORTANT: NO FastAPI imports here
+# NO: from mlops_online_news_popularity.serving import config
+# NO: from mlops_online_news_popularity.serving.app import app
+# These must only be imported inside fixtures!
 
 
 @pytest.fixture
@@ -22,7 +26,7 @@ def sample_features() -> Dict[str, float]:
     """
     Sample news article features for testing.
 
-    Returns a dictionary with all 59 required features.
+    Returns a dictionary with all 59 required features for model prediction.
     """
     return {
         "n_tokens_title": 10.0,
@@ -93,7 +97,7 @@ def mock_sklearn_pipeline():
     Create a simple real sklearn Pipeline for testing.
 
     Returns a minimal but functional sklearn pipeline that can be pickled.
-    Uses a simple Ridge model fitted with dummy data.
+    Uses a Ridge regression model fitted with dummy data.
     """
     from sklearn.pipeline import Pipeline
     from sklearn.linear_model import Ridge
@@ -105,9 +109,9 @@ def mock_sklearn_pipeline():
         ('model', Ridge(alpha=1.0, random_state=42))
     ])
 
-    # Fit with dummy data (59 features to match real model)
+    # Fit with dummy data (100 samples, 59 features to match real model)
     np.random.seed(42)
-    X_dummy = np.random.rand(100, 59)  # 100 samples, 59 features
+    X_dummy = np.random.rand(100, 59)
     # Create y_dummy with log-transformed values around 7.824 (log1p(2500))
     y_dummy = np.random.normal(7.824, 0.5, 100)
     pipeline.fit(X_dummy, y_dummy)
@@ -139,10 +143,10 @@ def test_client():
 
     Note: This imports the app, which will try to load a model on startup.
     The model loading may fail in test environment, which is expected.
+    Use `raise_server_exceptions=False` to prevent startup errors from failing tests.
     """
     from mlops_online_news_popularity.serving.app import app
-
-    # Create client without triggering startup events
+    # Create client without triggering startup event exceptions
     with TestClient(app, raise_server_exceptions=False) as client:
         yield client
 
@@ -153,7 +157,12 @@ def initialized_test_client(mock_sklearn_pipeline, temp_model_file, monkeypatch)
     Create a FastAPI TestClient with initialized model.
 
     This fixture properly initializes the model handler with a mock model
-    so all endpoints work correctly.
+    so all endpoints work correctly. The model handler is reset after the test.
+
+    Args:
+        mock_sklearn_pipeline: Mock sklearn pipeline fixture
+        temp_model_file: Temporary model file path fixture
+        monkeypatch: pytest monkeypatch fixture for environment variables
     """
     from mlops_online_news_popularity.serving.app import app
     from mlops_online_news_popularity.serving.model_handler import get_model_handler
@@ -180,7 +189,7 @@ def sample_csv_content() -> bytes:
     """
     Sample CSV content for file upload testing.
 
-    Returns CSV bytes with header and 2 sample rows.
+    Returns CSV bytes with header and 2 sample rows containing all 59 features.
     """
     csv_data = """n_tokens_title,n_tokens_content,n_unique_tokens,n_non_stop_words,n_non_stop_unique_tokens,num_hrefs,num_self_hrefs,num_imgs,num_videos,average_token_length,num_keywords,data_channel_is_lifestyle,data_channel_is_entertainment,data_channel_is_bus,data_channel_is_socmed,data_channel_is_tech,data_channel_is_world,kw_min_min,kw_max_min,kw_avg_min,kw_min_max,kw_max_max,kw_avg_max,kw_min_avg,kw_max_avg,kw_avg_avg,self_reference_min_shares,self_reference_max_shares,self_reference_avg_sharess,weekday_is_monday,weekday_is_tuesday,weekday_is_wednesday,weekday_is_thursday,weekday_is_friday,weekday_is_saturday,weekday_is_sunday,is_weekend,LDA_00,LDA_01,LDA_02,LDA_03,LDA_04,global_subjectivity,global_sentiment_polarity,global_rate_positive_words,global_rate_negative_words,rate_positive_words,rate_negative_words,avg_positive_polarity,min_positive_polarity,max_positive_polarity,avg_negative_polarity,min_negative_polarity,max_negative_polarity,title_subjectivity,title_sentiment_polarity,abs_title_subjectivity,abs_title_sentiment_polarity,mixed_type_col
 10.0,500.0,0.5,0.8,0.6,10.0,2.0,5.0,1.0,4.5,7.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1000.0,300.0,0.0,50000.0,10000.0,0.0,5000.0,2500.0,1000.0,10000.0,5000.0,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.2,0.3,0.2,0.2,0.1,0.5,0.1,0.04,0.02,0.7,0.3,0.35,0.1,1.0,-0.25,-0.8,-0.05,0.5,0.0,0.0,0.0,0.0
