@@ -261,8 +261,7 @@ class Experimento:
                         trainer = ModelTrainer(
                             data_processor=self.data,
                             estimator=estimator,
-                            model_name=model_name,
-                            seed=self.seed
+                            model_name=model_name
                         )
 
                         # Transform target if needed (log transformation for skewed data)

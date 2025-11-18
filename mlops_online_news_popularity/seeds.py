@@ -16,7 +16,7 @@ def set_global_seed(seed: int = SEED) -> int:
     os.environ["PYTHONHASHSEED"] = str(seed)
 
     # NumPy
-    np.random.seed(seed)
+    np.random.default_rng(seed)
 
     # Reducir no-determinismo de BLAS (OpenBLAS, MKL, etc.)
     os.environ["OPENBLAS_NUM_THREADS"] = "1"
